@@ -2,6 +2,11 @@ import React from 'react';
 import { Cpu, Cloud, ShieldCheck, UserCheck, Terminal, Zap } from 'lucide-react';
 
 export default function TopBar({ daytonaCredits, activeNodes }) {
+  const isLocalHost = typeof window !== 'undefined' && (
+    window.location.hostname === 'localhost' || 
+    window.location.hostname === '127.0.0.1'
+  );
+
   return (
     <div className="topbar" style={{
       background: 'rgba(10, 10, 16, 0.85)',
@@ -14,10 +19,12 @@ export default function TopBar({ daytonaCredits, activeNodes }) {
     }}>
       {/* Real Live System Metrics */}
       <div style={{ display: 'flex', gap: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
-        <div className="stat-pill" title="Live GPU Acceleration for Local Inference & Jetpack Compose Previews">
+        <div className="stat-pill" title={isLocalHost ? "Local Host RTX 5080 Hardware Acceleration" : "Cloud Distributed Inference Outpost"}>
           <Cpu size={14} color="#00F0FF" />
           <span style={{ fontSize: '0.65rem', color: '#AAA', fontFamily: 'JetBrains Mono' }}>GPU CORE:</span>
-          <span className="stat-value" style={{ color: '#00F0FF', fontWeight: 'bold', fontSize: '0.7rem' }}>RTX 5080 (ACTIVE)</span>
+          <span className="stat-value" style={{ color: '#00F0FF', fontWeight: 'bold', fontSize: '0.7rem' }}>
+            {isLocalHost ? 'RTX 5080 (LOCAL HOST)' : 'CLOUD INFERENCE (VERTEX / DAYTONA)'}
+          </span>
         </div>
 
         <div className="stat-pill" title="Google Antigravity & Vertex AI Subagent Swarm Status">
