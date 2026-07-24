@@ -1,53 +1,36 @@
 /* ==========================================================================
-   MOLTAGENT.RUN DESIGN SYSTEM TOKENS & CYBERNETIC WORKBENCH CSS
-   Art Direction: Cybernetic Command Studio (Neo-Industrial High-Density)
+   MOLTAGENT.RUN SLEEK MONOCHROME DESIGN SYSTEM
+   Theme: Linear/Vercel Dark Precision (Monochrome Obsidian + Subtle Electric Accent)
    ========================================================================== */
 
 :root {
-  /* Color Palette Tokens */
-  --bg-base: #030712;
-  --bg-surface: #0B0F19;
-  --bg-surface-elevated: #111827;
-  --bg-glass: rgba(11, 15, 25, 0.85);
+  /* Sleek Dark Palette */
+  --bg-base: #060608;
+  --bg-surface: #0E0F14;
+  --bg-surface-elevated: #14161F;
   
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-active: rgba(0, 240, 255, 0.35);
-  --border-glow: rgba(0, 240, 255, 0.6);
+  --border-subtle: #1F222E;
+  --border-active: #00F0FF;
 
-  --text-primary: #F9FAFB;
-  --text-secondary: #9CA3AF;
-  --text-muted: #6B7280;
+  --text-primary: #FFFFFF;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
 
-  /* Accent Colors */
-  --color-cyan: #00F0FF;
-  --color-emerald: #00FF66;
-  --color-amber: #FFD700;
-  --color-purple: #A855F7;
-  --color-danger: #EF4444;
+  /* Single Accent Color */
+  --accent-main: #00F0FF;
+  --accent-subtle: rgba(0, 240, 255, 0.1);
 
-  /* Typography Tokens */
+  /* Typography */
   --font-display: 'Space Grotesk', sans-serif;
   --font-body: 'Plus Jakarta Sans', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  /* Spacing Tokens */
+  /* Spacing */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
   --space-4: 16px;
   --space-6: 24px;
-  --space-8: 32px;
-
-  /* Radius Tokens */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-pill: 9999px;
-
-  /* Motion Tokens */
-  --duration-fast: 0.15s;
-  --duration-base: 0.25s;
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 * {
@@ -72,7 +55,6 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text-primary);
 }
 
-/* Layout Hierarchy */
 .app-container {
   display: flex;
   height: 100vh;
@@ -84,10 +66,10 @@ h1, h2, h3, h4, h5, h6 {
 .sidebar {
   width: 240px;
   height: 100%;
-  padding: var(--space-6) var(--space-4);
+  padding: 24px 16px;
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: 24px;
   z-index: 20;
   background: var(--bg-surface);
   border-right: 1px solid var(--border-subtle);
@@ -104,8 +86,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .topbar {
-  height: 64px;
-  padding: 0 var(--space-6);
+  height: 60px;
+  padding: 0 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -121,7 +103,7 @@ h1, h2, h3, h4, h5, h6 {
   width: 100%;
   height: 100%;
   z-index: 1;
-  opacity: 0.25;
+  opacity: 0.15; /* Subtle background depth, no bright glowing balls! */
   pointer-events: none;
 }
 
@@ -130,51 +112,50 @@ h1, h2, h3, h4, h5, h6 {
   position: relative;
   z-index: 10;
   overflow-y: auto;
-  padding: var(--space-6);
+  padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: 20px;
 }
 
-/* Card & Surface Tokens */
+/* Card & Surface Styling - Clean Monochrome */
 .card {
   background: var(--bg-surface-elevated);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: var(--space-4);
-  transition: border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
+  border-radius: 8px;
+  padding: 16px;
+  transition: border-color 0.15s ease;
 }
 
 .card:hover {
-  border-color: var(--border-active);
-  box-shadow: 0 4px 20px rgba(0, 240, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 /* Navigation Items */
 .nav-item {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: 12px;
   padding: 10px 12px;
-  border-radius: var(--radius-sm);
+  border-radius: 6px;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: all var(--duration-fast) var(--ease-out);
-  font-weight: 600;
+  transition: all 0.15s ease;
+  font-weight: 500;
   font-size: 0.8rem;
   font-family: var(--font-body);
   border: 1px solid transparent;
 }
 
 .nav-item:hover {
-  color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.05);
+  color: #FFF;
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .nav-item.active {
-  color: var(--color-cyan);
-  background: rgba(0, 240, 255, 0.08);
-  border-color: var(--border-active);
+  color: #FFF;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 /* Buttons */
@@ -183,46 +164,38 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
   font-size: 0.8rem;
   padding: 8px 16px;
-  border-radius: var(--radius-sm);
+  border-radius: 6px;
   border: 1px solid transparent;
   cursor: pointer;
-  transition: all var(--duration-fast) var(--ease-out);
+  transition: all 0.15s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
-}
-
-.button:hover {
-  transform: translateY(-1px);
-}
-
-.button:active {
-  transform: translateY(0);
+  gap: 8px;
 }
 
 .button-primary {
-  background: var(--color-cyan);
+  background: #FFF;
   color: #000;
   font-weight: 700;
 }
 
 .button-primary:hover {
-  box-shadow: 0 0 16px rgba(0, 240, 255, 0.4);
+  background: #E2E8F0;
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: var(--bg-base);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: #1F222E;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-cyan);
+  background: #334155;
 }

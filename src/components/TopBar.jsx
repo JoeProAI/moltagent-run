@@ -1,5 +1,5 @@
 import React from 'react';
-import { Cpu, Cloud, ShieldCheck, UserCheck, Terminal, Zap } from 'lucide-react';
+import { Cpu, Cloud, ShieldCheck, UserCheck } from 'lucide-react';
 
 export default function TopBar({ daytonaCredits, activeNodes }) {
   const isLocalHost = typeof window !== 'undefined' && (
@@ -8,71 +8,93 @@ export default function TopBar({ daytonaCredits, activeNodes }) {
   );
 
   return (
-    <div className="topbar" style={{
-      background: 'rgba(10, 10, 16, 0.85)',
-      backdropFilter: 'blur(12px)',
-      borderBottom: '1px solid rgba(0, 240, 255, 0.2)',
-      padding: '12px 24px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between'
-    }}>
+    <div className="topbar">
       {/* Real Live System Metrics */}
-      <div style={{ display: 'flex', gap: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
-        <div className="stat-pill" title={isLocalHost ? "Local Host RTX 5080 Hardware Acceleration" : "Cloud Distributed Inference Outpost"}>
-          <Cpu size={14} color="#00F0FF" />
-          <span style={{ fontSize: '0.65rem', color: '#AAA', fontFamily: 'JetBrains Mono' }}>GPU CORE:</span>
-          <span className="stat-value" style={{ color: '#00F0FF', fontWeight: 'bold', fontSize: '0.7rem' }}>
+      <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '6px 12px',
+          background: 'rgba(255,255,255,0.03)',
+          border: '1px solid #1F222E',
+          borderRadius: '6px',
+          fontSize: '0.72rem',
+          fontFamily: 'var(--font-mono)'
+        }}>
+          <Cpu size={14} color="#94A3B8" />
+          <span style={{ color: '#64748B' }}>GPU CORE:</span>
+          <span style={{ color: '#FFF', fontWeight: '600' }}>
             {isLocalHost ? 'RTX 5080 (LOCAL HOST)' : 'CLOUD INFERENCE (VERTEX / DAYTONA)'}
           </span>
         </div>
 
-        <div className="stat-pill" title="Google Antigravity & Vertex AI Subagent Swarm Status">
-          <Cloud size={14} color="#00FF66" />
-          <span style={{ fontSize: '0.65rem', color: '#AAA', fontFamily: 'JetBrains Mono' }}>SWARM STATUS:</span>
-          <span className="stat-value" style={{ color: '#00FF66', fontWeight: 'bold', fontSize: '0.7rem' }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '6px 12px',
+          background: 'rgba(255,255,255,0.03)',
+          border: '1px solid #1F222E',
+          borderRadius: '6px',
+          fontSize: '0.72rem',
+          fontFamily: 'var(--font-mono)'
+        }}>
+          <Cloud size={14} color="#94A3B8" />
+          <span style={{ color: '#64748B' }}>SWARM STATUS:</span>
+          <span style={{ color: '#FFF', fontWeight: '600' }}>
             {activeNodes > 0 ? `${activeNodes} AGENTS ACTIVE` : 'READY TO DISPATCH'}
           </span>
         </div>
 
-        <div className="stat-pill" title="Carapax Memory Integrity Firewall Protection">
-          <ShieldCheck size={14} color="#A855F7" />
-          <span style={{ fontSize: '0.65rem', color: '#AAA', fontFamily: 'JetBrains Mono' }}>CARAPAX FIREWALL:</span>
-          <span className="stat-value" style={{ color: '#A855F7', fontWeight: 'bold', fontSize: '0.7rem' }}>5-PLANE SECURE</span>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '6px 12px',
+          background: 'rgba(255,255,255,0.03)',
+          border: '1px solid #1F222E',
+          borderRadius: '6px',
+          fontSize: '0.72rem',
+          fontFamily: 'var(--font-mono)'
+        }}>
+          <ShieldCheck size={14} color="#94A3B8" />
+          <span style={{ color: '#64748B' }}>CARAPAX FIREWALL:</span>
+          <span style={{ color: '#FFF', fontWeight: '600' }}>5-PLANE SECURE</span>
         </div>
       </div>
 
       {/* User Profile & Actions */}
-      <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
         <div style={{
           display: 'flex',
           alignItems: 'center',
           gap: '10px',
-          background: 'rgba(0, 240, 255, 0.1)',
-          border: '1px solid rgba(0, 240, 255, 0.3)',
-          padding: '6px 14px',
+          background: 'rgba(255,255,255,0.04)',
+          border: '1px solid #1F222E',
+          padding: '6px 12px',
           borderRadius: '6px'
         }}>
-          <UserCheck size={16} color="#00F0FF" />
+          <UserCheck size={16} color="#FFF" />
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#FFF' }}>JP (JoePro AI)</span>
-            <span style={{ fontSize: '0.55rem', color: '#00FF66', fontFamily: 'JetBrains Mono' }}>PRO SWARM • MOLTAGENT.RUN</span>
+            <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#FFF' }}>JP (JoePro AI)</span>
+            <span style={{ fontSize: '0.58rem', color: '#64748B', fontFamily: 'var(--font-mono)' }}>PRO SWARM • MOLTAGENT.RUN</span>
           </div>
         </div>
 
         <div style={{
-          width: '36px',
-          height: '36px',
+          width: '32px',
+          height: '32px',
           borderRadius: '50%',
-          background: 'linear-gradient(135deg, #00F0FF 0%, #A855F7 100%)',
+          background: '#1F222E',
+          border: '1px solid #334155',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontWeight: 'bold',
-          color: '#000',
-          fontFamily: 'JetBrains Mono',
-          fontSize: '0.85rem',
-          boxShadow: '0 0 10px rgba(0, 240, 255, 0.4)'
+          fontWeight: '700',
+          color: '#FFF',
+          fontFamily: 'var(--font-mono)',
+          fontSize: '0.75rem'
         }}>
           JP
         </div>
