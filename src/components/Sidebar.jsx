@@ -1,14 +1,25 @@
 import React from 'react';
-import { Network, Rocket, Layers, Smartphone, Zap, ShieldCheck, Activity, Database, Settings } from 'lucide-react';
+import { 
+  Smartphone, 
+  ShieldCheck, 
+  Zap, 
+  Network, 
+  Rocket, 
+  Layers, 
+  Activity, 
+  Database, 
+  Settings,
+  HelpCircle
+} from 'lucide-react';
 
 export default function Sidebar({ activeWidget, setActiveWidget, setConstellation, isSynced }) {
   const menuItems = [
-    { id: 'android-studio', icon: <Smartphone size={18} strokeWidth={1.5} />, label: 'ANDROID SWARM', mode: 'android-party' },
-    { id: 'carapace-firewall', icon: <ShieldCheck size={18} strokeWidth={1.5} />, label: 'CARAPAX FIREWALL', mode: 'carapace-sec' },
-    { id: 'mecha-run', icon: <Zap size={18} strokeWidth={1.5} />, label: 'M.E.C.H.A. RUN', mode: 'mecha-party' },
-    { id: 'factory', icon: <Network size={18} strokeWidth={1.5} />, label: 'AGENT FACTORY', mode: 'cinematic' },
-    { id: 'x-growth', icon: <Rocket size={18} strokeWidth={1.5} />, label: 'X MULTIPLIER', mode: 'x-growth' },
-    { id: 'bridge', icon: <Layers size={18} strokeWidth={1.5} />, label: 'HYBRID BRIDGE', mode: 'research' },
+    { id: 'android-studio', icon: <Smartphone size={16} />, label: 'ANDROID SWARM', mode: 'android-party' },
+    { id: 'carapace-firewall', icon: <ShieldCheck size={16} />, label: 'CARAPAX FIREWALL', mode: 'carapace-sec' },
+    { id: 'mecha-run', icon: <Zap size={16} />, label: 'M.E.C.H.A. RUN', mode: 'mecha-party' },
+    { id: 'factory', icon: <Network size={16} />, label: 'AGENT FACTORY', mode: 'cinematic' },
+    { id: 'x-growth', icon: <Rocket size={16} />, label: 'X MULTIPLIER', mode: 'x-growth' },
+    { id: 'bridge', icon: <Layers size={16} />, label: 'HYBRID BRIDGE', mode: 'research' },
   ];
 
   const handleNavClick = (id, mode) => {
@@ -18,24 +29,55 @@ export default function Sidebar({ activeWidget, setActiveWidget, setConstellatio
 
   return (
     <div className="sidebar">
+      {/* Brand Header */}
       <div>
-        <h1 style={{ fontSize: '1.4rem', display: 'flex', alignItems: 'center', gap: '12px', letterSpacing: '0.15em', color: '#00F0FF' }}>
-          <div style={{ width: '10px', height: '10px', background: '#00F0FF', boxShadow: '0 0 10px #00F0FF' }} />
-          MOLTAGENT.RUN
-        </h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.62rem', marginTop: '8px', letterSpacing: '0.2em', fontFamily: 'JetBrains Mono', textTransform: 'uppercase' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{
+            width: '10px',
+            height: '10px',
+            borderRadius: '2px',
+            background: 'var(--color-cyan)',
+            boxShadow: '0 0 10px var(--color-cyan)'
+          }} />
+          <h1 style={{
+            fontSize: '1.2rem',
+            fontFamily: 'var(--font-display)',
+            fontWeight: '700',
+            color: '#FFF',
+            letterSpacing: '-0.02em'
+          }}>
+            MOLTAGENT.RUN
+          </h1>
+        </div>
+        <p style={{
+          color: 'var(--text-muted)',
+          fontSize: '0.62rem',
+          marginTop: '4px',
+          fontFamily: 'var(--font-mono)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.05em'
+        }}>
           Multi-Agent Swarm Studio
         </p>
       </div>
 
-      <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.6rem', fontFamily: 'JetBrains Mono', letterSpacing: '0.15em', marginBottom: '16px' }}>MODULES</p>
+      {/* Navigation Modules */}
+      <nav style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <p style={{
+          color: 'var(--text-muted)',
+          fontSize: '0.6rem',
+          fontFamily: 'var(--font-mono)',
+          letterSpacing: '0.1em',
+          marginBottom: '8px',
+          fontWeight: '700'
+        }}>
+          STUDIO MODULES
+        </p>
         {menuItems.map(item => (
           <div 
             key={item.id}
             className={`nav-item ${activeWidget === item.id ? 'active' : ''}`}
             onClick={() => handleNavClick(item.id, item.mode)}
-            style={{ fontWeight: activeWidget === item.id ? '500' : '300' }}
           >
             {item.icon}
             <span>{item.label}</span>
@@ -43,26 +85,20 @@ export default function Sidebar({ activeWidget, setActiveWidget, setConstellatio
         ))}
       </nav>
 
-      <div style={{ marginTop: 'auto' }}>
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.6rem', fontFamily: 'JetBrains Mono', letterSpacing: '0.15em', marginBottom: '16px' }}>SYSTEM</p>
-          <div className="nav-item">
-            <Activity size={18} strokeWidth={1.5} />
-            <span>LOCAL SYNC (NOESIS)</span>
-            <div className={`status-dot ${isSynced ? 'syncing' : ''}`} style={{ marginLeft: 'auto' }}></div>
+      {/* System Status Footer */}
+      <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div style={{
+          padding: '12px',
+          background: 'rgba(255,255,255,0.03)',
+          border: '1px solid var(--border-subtle)',
+          borderRadius: 'var(--radius-sm)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+            <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#FFF', fontFamily: 'var(--font-mono)' }}>MEMORY TRUTH</span>
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--color-emerald)', boxShadow: '0 0 6px var(--color-emerald)' }}></span>
           </div>
-          <div className="nav-item">
-            <Database size={18} strokeWidth={1.5} />
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span>OPENCLAW BRAIN</span>
-              <span style={{ fontSize: '0.55rem', color: 'var(--text-muted)' }}>Read-First Memory Truth</span>
-            </div>
-          </div>
-          <div className="nav-item">
-            <Settings size={18} strokeWidth={1.5} />
-            <span>GRAVITY RULES</span>
-          </div>
-        </nav>
+          <p style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>NOESIS & gBrain Vector Vault Synchronized</p>
+        </div>
       </div>
     </div>
   );
