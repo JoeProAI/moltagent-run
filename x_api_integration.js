@@ -34,7 +34,7 @@ class XGrowthMultiplier {
   // 2. Cheap Owned Reads Implementation (2026 API specific)
   async fetchOwnedReadsStats(userId) {
     // In production, this uses the local fetch wrapper with authorization
-    console.log(`[AETHER] Pulling high-signal engagement data for User ID: ${userId}`);
+    console.log(`[AETHER] Pulling high-signal engagement data for @JoePro (User ID: ${userId})`);
     
     // Simulating API call to /2/users/:id/tweets with tweet.fields=public_metrics,organic_metrics
     return {

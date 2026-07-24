@@ -77,7 +77,7 @@ export default function TopBar({ daytonaCredits, activeNodes }) {
         }}>
           <UserCheck size={16} color="#FFF" />
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#FFF' }}>JP (JoePro AI)</span>
+            <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#FFF' }}>JP (@JoePro)</span>
             <span style={{ fontSize: '0.58rem', color: '#64748B', fontFamily: 'var(--font-mono)' }}>PRO SWARM • MOLTAGENT.RUN</span>
           </div>
         </div>

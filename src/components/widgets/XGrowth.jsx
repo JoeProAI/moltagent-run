@@ -19,10 +19,10 @@ export default function XGrowth({ setActiveAgents }) {
   const [isSimulating, setIsSimulating] = useState(false);
   const [winningHook, setWinningHook] = useState(null);
 
-  // Real Account Telemetry Data (@JoeProAI)
+  // Real Account Telemetry Data (@JoePro)
   const xAccountData = {
-    handle: '@JoeProAI',
-    accountName: 'JoePro AI',
+    handle: '@JoePro',
+    accountName: 'JoePro',
     status: 'AUTHENTICATED (OAuth 2.0 PKCE)',
     impressions48h: '4,285,100',
     followerDelta: '+12,450',
@@ -96,7 +96,7 @@ export default function XGrowth({ setActiveAgents }) {
             <div style={{ fontSize: '1rem', fontWeight: '700', color: '#FFF', display: 'flex', alignItems: 'center', gap: '10px' }}>
               X CREATOR GROWTH & DATA MULTIPLIER
               <span style={{ fontSize: '0.62rem', background: '#00F0FF', color: '#000', fontWeight: 'bold', padding: '2px 8px', borderRadius: '4px' }}>
-                LIVE @JoeProAI AUTHENTICATED
+                LIVE @JoePro AUTHENTICATED
               </span>
             </div>
             <p style={{ fontSize: '0.72rem', color: '#94A3B8', marginTop: '2px', fontFamily: 'var(--font-mono)' }}>
@@ -191,7 +191,7 @@ export default function XGrowth({ setActiveAgents }) {
       <div className="card" style={{ background: '#0E0F14' }}>
         <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#FFF', fontFamily: 'var(--font-mono)', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Share2 size={14} color="#94A3B8" />
-          AUTHENTICATED X POST ANALYTICS (@JoeProAI)
+          AUTHENTICATED X POST ANALYTICS (@JoePro)
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
