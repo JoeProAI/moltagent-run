@@ -125,13 +125,13 @@ export default function CarapaceFirewall() {
           {ledgerLogs.map((log) => (
             <div key={log.id} className={`log-block ${statusTone(log.status)}`}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 'var(--sp-2)', flexWrap: 'wrap' }}>
-                <span style={{ color: 'var(--bone)', fontWeight: 700 }}>
+                <span style={{ color: 'var(--frost)', fontWeight: 700 }}>
                   [{log.plane}] <span style={{ color: log.status === 'REJECTED' ? 'var(--danger)' : 'var(--ok)' }}>{log.status}</span>
                 </span>
                 <span className="log-time">{log.time} · {log.id}</span>
               </div>
               <div className="log-msg">{log.msg}</div>
-              <div className="log-time">hash <code style={{ color: 'var(--bone-2)' }}>{log.hash}</code> · trust {log.trust}</div>
+              <div className="log-time">hash <code style={{ color: 'var(--frost-2)' }}>{log.hash}</code> · trust {log.trust}</div>
             </div>
           ))}
         </div>

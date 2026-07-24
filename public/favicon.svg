@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
   <!-- MoltAgent carapace plate mark: chitin plate, three amber segments -->
-  <polygon points="0,0 36,0 48,12 48,48 0,48" fill="#0B0906"/>
+  <polygon points="0,0 36,0 48,12 48,48 0,48" fill="#090B14"/>
   <polygon points="1.5,1.5 35.4,1.5 46.5,12.6 46.5,46.5 1.5,46.5" fill="none" stroke="#E8A832" stroke-width="3"/>
   <polygon points="10,14 22,14 19,22 7,22" fill="#E8A832"/>
   <polygon points="25,14 37,14 34,22 22,22" fill="#E8A832"/>

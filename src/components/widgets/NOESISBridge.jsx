@@ -135,7 +135,7 @@ export default function NOESISBridge({ isSynced, setIsSynced, daytonaCredits, se
           <div className="panel-title">Routing intel</div>
           <span className="panel-note">Defy Gravity mode active</span>
         </div>
-        <p style={{ fontSize: '0.75rem', color: 'var(--bone-2)', fontFamily: 'var(--font-mono)', lineHeight: 1.7, margin: 0 }}>
+        <p style={{ fontSize: '0.75rem', color: 'var(--frost-2)', fontFamily: 'var(--font-mono)', lineHeight: 1.7, margin: 0 }}>
           Heavy rendering routed to Google Cloud. Daytona workspaces handle active dev builds.
           Cinematic polish pulled back to local NOESIS.
         </p>

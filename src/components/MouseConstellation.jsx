@@ -1,11 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 
-// Amber-resin constellation: monochrome accent particles that drift and
-// gather toward the cursor. Disabled entirely under prefers-reduced-motion.
+// Teneral constellation: amber and ice particles that drift and gather
+// toward the cursor. Disabled entirely under prefers-reduced-motion.
 const COLORS = [
   { main: '#E8A832', glow: 'rgba(232, 168, 50' },
   { main: '#FFC24B', glow: 'rgba(255, 194, 75' },
-  { main: '#B0A488', glow: 'rgba(176, 164, 136' }
+  { main: '#8FA3FF', glow: 'rgba(143, 163, 255' }
 ];
 
 export default function MouseConstellation() {

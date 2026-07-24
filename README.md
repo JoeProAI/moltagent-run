@@ -12,10 +12,11 @@ Live at [moltagent.run](https://www.moltagent.run).
 
 ## Design system
 
-"Chitin Command" — warm chitin-black surfaces, amber resin accent (`#E8A832`),
-bone text, chamfered plate geometry. Tokens live in `src/index.css`. Zero
-border-radius; 1px seams create structure. Space Grotesk display, Plus Jakarta
-Sans body, JetBrains Mono for terminal and data.
+"Teneral" — the glossy just-molted state. Deep indigo surfaces (`#090B14`)
+with top-light sheen, amber resin primary accent (`#E8A832`), ice-blue
+secondary (`#8FA3FF`), frost text, chamfered plate geometry. Tokens live in
+`src/index.css`. Zero border-radius; 1px seams and light create structure.
+Space Grotesk display, Plus Jakarta Sans body, JetBrains Mono for data.
 
 ## Modules
 

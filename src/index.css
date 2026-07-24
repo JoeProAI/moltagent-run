@@ -1,37 +1,42 @@
 /* ==========================================================================
-   MOLTAGENT.RUN — CHITIN COMMAND DESIGN SYSTEM
-   Concept: an arthropod grows by shedding its carapace. Warm chitin-black
-   surfaces, amber resin accent, bone text, chamfered plate geometry.
-   Structure comes from 1px seams, never from background fills.
+   MOLTAGENT.RUN — TENERAL DESIGN SYSTEM
+   Concept: the teneral state — an insect just after the molt, shell still
+   glossy. Deep indigo surfaces with top-light sheen, amber resin as the
+   primary accent, ice-blue as the cool counterpoint, frost text.
+   Structure comes from 1px seams and light, never from flat fills.
    ========================================================================== */
 
 :root {
-  /* Chitin surface stack — warm black, never blue-black */
-  --chitin-0: #0B0906;
-  --chitin-1: #14100A;
-  --chitin-2: #1D1810;
-  --chitin-3: #262013;
+  /* Indigo ink stack — deep, cool, luminous */
+  --ink-0: #090B14;
+  --ink-1: #0F1322;
+  --ink-2: #171C30;
+  --ink-3: #212743;
 
   /* Seams */
-  --seam: #2C2416;
-  --seam-strong: #4A3B1E;
+  --seam: #232A47;
+  --seam-strong: #39426B;
 
-  /* Amber resin — the single accent */
+  /* Amber resin — the primary accent */
   --amber: #E8A832;
   --amber-bright: #FFC24B;
-  --amber-dim: rgba(232, 168, 50, 0.12);
-  --amber-faint: rgba(232, 168, 50, 0.05);
+  --amber-dim: rgba(232, 168, 50, 0.14);
+  --amber-faint: rgba(232, 168, 50, 0.06);
 
-  /* Status only — hemolymph + wasp */
-  --ok: #9BB56E;
-  --ok-dim: rgba(155, 181, 110, 0.14);
-  --danger: #D9583B;
-  --danger-dim: rgba(217, 88, 59, 0.14);
+  /* Ice — cool secondary accent for depth */
+  --ice: #8FA3FF;
+  --ice-dim: rgba(143, 163, 255, 0.14);
 
-  /* Bone text ramp */
-  --bone: #EFE7D6;
-  --bone-2: #B0A488;
-  --bone-3: #837863;
+  /* Status */
+  --ok: #63E6BE;
+  --ok-dim: rgba(99, 230, 190, 0.12);
+  --danger: #F2555A;
+  --danger-dim: rgba(242, 85, 90, 0.14);
+
+  /* Frost text ramp */
+  --frost: #EDF1FC;
+  --frost-2: #A9B2CC;
+  --frost-3: #6C7594;
 
   /* Type */
   --font-display: 'Space Grotesk', sans-serif;
@@ -65,8 +70,8 @@ body {
 
 body {
   font-family: var(--font-body);
-  background-color: var(--chitin-0);
-  color: var(--bone);
+  background-color: var(--ink-0);
+  color: var(--frost);
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
   line-height: 1.5;
@@ -77,12 +82,12 @@ h1, h2, h3, h4 {
   font-family: var(--font-display);
   font-weight: 700;
   letter-spacing: -0.01em;
-  color: var(--bone);
+  color: var(--frost);
 }
 
 ::selection {
   background: var(--amber);
-  color: var(--chitin-0);
+  color: var(--ink-0);
 }
 
 :focus-visible {
@@ -100,7 +105,7 @@ h1, h2, h3, h4 {
   height: 100vh;
   width: 100vw;
   position: relative;
-  background: var(--chitin-0);
+  background: var(--ink-0);
 }
 
 .system-warning {
@@ -111,7 +116,7 @@ h1, h2, h3, h4 {
   font-size: 0.72rem;
   background: var(--danger-dim);
   border-bottom: 1px solid var(--danger);
-  color: var(--bone);
+  color: var(--frost);
 }
 
 /* --- Header ------------------------------------------------------------- */
@@ -123,7 +128,8 @@ h1, h2, h3, h4 {
   height: 60px;
   padding: 0 var(--sp-6);
   border-bottom: 1px solid var(--seam);
-  background: var(--chitin-1);
+  background: linear-gradient(180deg, #141931, var(--ink-1));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
   z-index: 20;
   flex-shrink: 0;
 }
@@ -140,12 +146,13 @@ h1, h2, h3, h4 {
   font-weight: 700;
   font-size: 1.05rem;
   letter-spacing: 0.02em;
-  color: var(--bone);
+  color: var(--frost);
 }
 
 .brand-mark em {
   font-style: normal;
   color: var(--amber);
+  text-shadow: 0 0 16px rgba(232, 168, 50, 0.45);
 }
 
 .brand-tag {
@@ -153,7 +160,7 @@ h1, h2, h3, h4 {
   font-size: 0.6rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--bone-3);
+  color: var(--frost-3);
 }
 
 .telemetry {
@@ -176,13 +183,13 @@ h1, h2, h3, h4 {
   background: transparent;
   font-family: var(--font-mono);
   font-size: 0.68rem;
-  color: var(--bone-3);
+  color: var(--frost-3);
   white-space: nowrap;
   flex-shrink: 0;
 }
 
 .chip strong {
-  color: var(--bone);
+  color: var(--frost);
   font-weight: 500;
 }
 
@@ -190,7 +197,7 @@ h1, h2, h3, h4 {
   width: 6px;
   height: 6px;
   flex-shrink: 0;
-  background: var(--bone-3);
+  background: var(--frost-3);
 }
 .chip .dot.ok {
   background: var(--ok);
@@ -219,7 +226,7 @@ h1, h2, h3, h4 {
 .identity-name {
   font-size: 0.78rem;
   font-weight: 600;
-  color: var(--bone);
+  color: var(--frost);
   line-height: 1.2;
 }
 
@@ -236,13 +243,14 @@ h1, h2, h3, h4 {
   height: 32px;
   display: grid;
   place-items: center;
-  background: var(--amber-dim);
+  background: linear-gradient(180deg, rgba(255, 194, 75, 0.25), var(--amber-dim));
   border: 1px solid var(--amber);
   clip-path: var(--clip-plate);
   color: var(--amber);
   font-family: var(--font-display);
   font-weight: 700;
   font-size: 0.72rem;
+  text-shadow: 0 0 10px rgba(232, 168, 50, 0.5);
 }
 
 /* --- Plate nav — the signature: navigation as carapace segments --------- */
@@ -250,7 +258,7 @@ h1, h2, h3, h4 {
 .plate-nav {
   display: flex;
   border-bottom: 1px solid var(--seam);
-  background: var(--chitin-1);
+  background: var(--ink-1);
   z-index: 20;
   flex-shrink: 0;
   overflow-x: auto;
@@ -294,7 +302,7 @@ h1, h2, h3, h4 {
   font-family: var(--font-mono);
   font-size: 0.58rem;
   letter-spacing: 0.1em;
-  color: var(--bone-3);
+  color: var(--frost-3);
 }
 
 .plate-label {
@@ -302,14 +310,14 @@ h1, h2, h3, h4 {
   font-weight: 600;
   font-size: 0.8rem;
   letter-spacing: 0.03em;
-  color: var(--bone-2);
+  color: var(--frost-2);
   white-space: nowrap;
   transition: color 0.15s ease;
 }
 
 .plate-role {
   font-size: 0.62rem;
-  color: var(--bone-3);
+  color: var(--frost-3);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -319,17 +327,19 @@ h1, h2, h3, h4 {
   background: var(--amber-faint);
 }
 .plate:hover .plate-label {
-  color: var(--bone);
+  color: var(--frost);
 }
 
 .plate.active {
-  background: var(--chitin-0);
+  background:
+    linear-gradient(180deg, rgba(232, 168, 50, 0.08), rgba(232, 168, 50, 0) 65%),
+    var(--ink-0);
 }
 .plate.active::after {
   background: var(--amber);
 }
 .plate.active .plate-label {
-  color: var(--bone);
+  color: var(--frost);
 }
 .plate.active .plate-id {
   color: var(--amber);
@@ -343,9 +353,10 @@ h1, h2, h3, h4 {
   z-index: 10;
   overflow-y: auto;
   padding: var(--sp-6);
-  /* faint amber light source above the shell */
+  /* two light sources: amber above, ice glancing from below */
   background:
-    radial-gradient(ellipse 80% 40% at 50% -10%, rgba(232, 168, 50, 0.06), transparent 70%);
+    radial-gradient(ellipse 80% 40% at 50% -10%, rgba(232, 168, 50, 0.07), transparent 70%),
+    radial-gradient(ellipse 65% 50% at 88% 112%, rgba(143, 163, 255, 0.07), transparent 70%);
 }
 
 .module {
@@ -424,7 +435,7 @@ h1, h2, h3, h4 {
 
 .masthead-sub {
   font-size: 0.8rem;
-  color: var(--bone-2);
+  color: var(--frost-2);
   margin-top: var(--sp-1);
   max-width: 62ch;
 }
@@ -443,8 +454,12 @@ h1, h2, h3, h4 {
 /* --- Panels — chamfered carapace plates ---------------------------------- */
 
 .panel {
-  background: var(--chitin-1);
+  /* glossy cuticle: top-light gradient over indigo, inset highlight seam */
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0) 42%),
+    var(--ink-1);
   border: 1px solid var(--seam);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
   clip-path: var(--clip-plate);
   padding: var(--sp-4);
   transition: border-color 0.15s ease;
@@ -455,7 +470,7 @@ h1, h2, h3, h4 {
 }
 
 .panel.sunken {
-  background: var(--chitin-0);
+  background: var(--ink-0);
 }
 
 .panel-head {
@@ -474,7 +489,7 @@ h1, h2, h3, h4 {
   font-weight: 600;
   font-size: 0.85rem;
   letter-spacing: 0.02em;
-  color: var(--bone);
+  color: var(--frost);
 }
 
 .panel-title svg {
@@ -485,13 +500,13 @@ h1, h2, h3, h4 {
 .panel-note {
   font-family: var(--font-mono);
   font-size: 0.62rem;
-  color: var(--bone-3);
+  color: var(--frost-3);
   text-align: right;
 }
 
 .panel-sub {
   font-size: 0.72rem;
-  color: var(--bone-2);
+  color: var(--frost-2);
   margin-bottom: var(--sp-3);
 }
 
@@ -527,7 +542,7 @@ h1, h2, h3, h4 {
   padding: 9px 18px;
   border: 1px solid var(--seam-strong);
   background: transparent;
-  color: var(--bone);
+  color: var(--frost);
   cursor: pointer;
   clip-path: var(--clip-plate);
   --chamfer: 7px;
@@ -549,14 +564,17 @@ h1, h2, h3, h4 {
   opacity: 0.5;
   border-color: var(--seam);
   background: transparent;
-  color: var(--bone-3);
+  color: var(--frost-3);
 }
 
 .btn.primary {
-  background: var(--amber);
+  background: linear-gradient(180deg, var(--amber-bright), var(--amber));
   border-color: var(--amber);
-  color: var(--chitin-0);
+  color: var(--ink-0);
   position: relative;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    0 0 14px rgba(232, 168, 50, 0.25);
 }
 
 /* Resin sheen sweeps across primary CTAs on hover */
@@ -574,9 +592,11 @@ h1, h2, h3, h4 {
 }
 
 .btn.primary:hover:not(:disabled) {
-  background: var(--amber-bright);
+  background: linear-gradient(180deg, #FFD070, var(--amber-bright));
   border-color: var(--amber-bright);
-  box-shadow: 0 0 18px rgba(232, 168, 50, 0.35);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 0 22px rgba(232, 168, 50, 0.45);
 }
 
 .btn.primary:hover:not(:disabled)::after {
@@ -584,18 +604,18 @@ h1, h2, h3, h4 {
 }
 
 .btn.primary:disabled {
-  background: var(--chitin-3);
-  border-color: var(--chitin-3);
-  color: var(--bone-3);
+  background: var(--ink-3);
+  border-color: var(--ink-3);
+  color: var(--frost-3);
 }
 
 .btn.quiet {
   border-color: transparent;
-  color: var(--bone-2);
+  color: var(--frost-2);
   padding: 6px 10px;
 }
 .btn.quiet:hover {
-  color: var(--bone);
+  color: var(--frost);
   border-color: var(--seam-strong);
   background: transparent;
 }
@@ -603,7 +623,7 @@ h1, h2, h3, h4 {
 .btn-hint {
   font-family: var(--font-mono);
   font-size: 0.62rem;
-  color: var(--bone-3);
+  color: var(--frost-3);
 }
 
 /* --- Fields --------------------------------------------------------------- */
@@ -611,9 +631,9 @@ h1, h2, h3, h4 {
 .field,
 .textarea {
   width: 100%;
-  background: var(--chitin-0);
+  background: var(--ink-0);
   border: 1px solid var(--seam);
-  color: var(--bone);
+  color: var(--frost);
   padding: 10px 14px;
   font-family: var(--font-mono);
   font-size: 0.78rem;
@@ -623,7 +643,7 @@ h1, h2, h3, h4 {
 
 .field::placeholder,
 .textarea::placeholder {
-  color: var(--bone-3);
+  color: var(--frost-3);
 }
 
 .field:hover,
@@ -647,7 +667,7 @@ h1, h2, h3, h4 {
   font-size: 0.62rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--bone-3);
+  color: var(--frost-3);
   margin-bottom: var(--sp-2);
 }
 
@@ -669,7 +689,7 @@ input[type='range'] {
   text-transform: uppercase;
   padding: 3px 8px;
   border: 1px solid var(--seam-strong);
-  color: var(--bone-2);
+  color: var(--frost-2);
   white-space: nowrap;
 }
 
@@ -701,7 +721,7 @@ input[type='range'] {
 .segmeter span {
   height: 8px;
   flex: 1;
-  background: var(--chitin-3);
+  background: var(--ink-3);
   clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%);
 }
 
@@ -727,8 +747,11 @@ input[type='range'] {
 /* --- Metric tiles ---------------------------------------------------------- */
 
 .metric {
-  background: var(--chitin-1);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0) 42%),
+    var(--ink-1);
   border: 1px solid var(--seam);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
   clip-path: var(--clip-plate);
   padding: var(--sp-4);
   display: flex;
@@ -741,7 +764,7 @@ input[type='range'] {
   font-size: 0.6rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--bone-3);
+  color: var(--frost-3);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -749,7 +772,7 @@ input[type='range'] {
 }
 
 .metric-label svg {
-  color: var(--bone-3);
+  color: var(--frost-3);
 }
 
 .metric-value {
@@ -757,13 +780,17 @@ input[type='range'] {
   font-weight: 700;
   font-size: 1.6rem;
   line-height: 1.1;
-  color: var(--bone);
+  /* polished-metal numerals */
+  background: linear-gradient(180deg, #FFFFFF 20%, #B9C6EE);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .metric-sub {
   font-family: var(--font-mono);
   font-size: 0.62rem;
-  color: var(--bone-2);
+  color: var(--frost-2);
 }
 .metric-sub.hot { color: var(--amber); }
 .metric-sub.ok { color: var(--ok); }
@@ -784,7 +811,7 @@ input[type='range'] {
   display: flex;
   gap: var(--sp-3);
   padding: 7px 10px;
-  background: var(--chitin-1);
+  background: var(--ink-1);
   border-left: 2px solid var(--seam-strong);
   line-height: 1.45;
   animation: log-in 0.3s ease both;
@@ -807,7 +834,7 @@ input[type='range'] {
 .log-row.danger { border-left-color: var(--danger); }
 
 .log-time {
-  color: var(--bone-3);
+  color: var(--frost-3);
   flex-shrink: 0;
 }
 
@@ -819,12 +846,12 @@ input[type='range'] {
 }
 
 .log-msg {
-  color: var(--bone-2);
+  color: var(--frost-2);
 }
 
 .log-block {
   padding: 7px 10px;
-  background: var(--chitin-1);
+  background: var(--ink-1);
   border-left: 2px solid var(--seam-strong);
   display: flex;
   flex-direction: column;
@@ -840,7 +867,7 @@ input[type='range'] {
   display: flex;
   gap: 0;
   border: 1px solid var(--seam);
-  background: var(--chitin-0);
+  background: var(--ink-0);
   width: fit-content;
   max-width: 100%;
   overflow-x: auto;
@@ -858,7 +885,7 @@ input[type='range'] {
   font-weight: 600;
   font-size: 0.7rem;
   letter-spacing: 0.04em;
-  color: var(--bone-3);
+  color: var(--frost-3);
   cursor: pointer;
   white-space: nowrap;
   transition: color 0.15s ease, background 0.15s ease;
@@ -867,7 +894,7 @@ input[type='range'] {
 .tab:last-child { border-right: none; }
 
 .tab:hover {
-  color: var(--bone);
+  color: var(--frost);
 }
 
 .tab.active {
@@ -879,7 +906,7 @@ input[type='range'] {
 /* --- Roster rows -------------------------------------------------------------- */
 
 .roster-row {
-  background: var(--chitin-1);
+  background: var(--ink-1);
   border: 1px solid var(--seam);
   border-left: 2px solid var(--seam-strong);
   padding: var(--sp-3);
@@ -901,7 +928,7 @@ input[type='range'] {
   font-family: var(--font-display);
   font-weight: 600;
   font-size: 0.8rem;
-  color: var(--bone);
+  color: var(--frost);
 }
 
 .roster-role {
@@ -913,20 +940,20 @@ input[type='range'] {
 
 .roster-desc {
   font-size: 0.68rem;
-  color: var(--bone-2);
+  color: var(--frost-2);
   margin-top: 3px;
 }
 
 /* --- Code block ----------------------------------------------------------------- */
 
 .codeblock {
-  background: var(--chitin-0);
+  background: var(--ink-0);
   border: 1px solid var(--seam);
   padding: var(--sp-4);
   font-family: var(--font-mono);
   font-size: 0.72rem;
   line-height: 1.6;
-  color: var(--bone-2);
+  color: var(--frost-2);
   overflow: auto;
   max-height: 340px;
   white-space: pre;
@@ -937,14 +964,23 @@ input[type='range'] {
 .tier {
   display: flex;
   flex-direction: column;
-  background: var(--chitin-1);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0) 42%),
+    var(--ink-1);
   border: 1px solid var(--seam);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
   clip-path: var(--clip-plate);
   padding: var(--sp-5);
 }
 
 .tier.featured {
   border-color: var(--amber);
+  background:
+    linear-gradient(180deg, rgba(232, 168, 50, 0.08), rgba(232, 168, 50, 0) 45%),
+    var(--ink-1);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 194, 75, 0.25),
+    0 0 24px rgba(232, 168, 50, 0.12);
 }
 
 .tier-name {
@@ -959,19 +995,19 @@ input[type='range'] {
   font-family: var(--font-display);
   font-weight: 700;
   font-size: 2rem;
-  color: var(--bone);
+  color: var(--frost);
   margin: var(--sp-2) 0 0;
 }
 
 .tier-price span {
   font-size: 0.75rem;
   font-weight: 500;
-  color: var(--bone-3);
+  color: var(--frost-3);
 }
 
 .tier-audience {
   font-size: 0.72rem;
-  color: var(--bone-2);
+  color: var(--frost-2);
   margin: var(--sp-1) 0 var(--sp-4);
 }
 
@@ -989,7 +1025,7 @@ input[type='range'] {
   align-items: flex-start;
   gap: var(--sp-2);
   font-size: 0.72rem;
-  color: var(--bone-2);
+  color: var(--frost-2);
 }
 
 .tier-features li::before {
@@ -1007,7 +1043,7 @@ input[type='range'] {
 
 .phone-frame {
   width: 220px;
-  background: var(--chitin-2);
+  background: var(--ink-2);
   border: 1px solid var(--seam-strong);
   padding: 10px;
   display: flex;
@@ -1016,7 +1052,7 @@ input[type='range'] {
 }
 
 .phone-screen {
-  background: var(--chitin-0);
+  background: var(--ink-0);
   border: 1px solid var(--seam);
   padding: 10px;
   display: flex;

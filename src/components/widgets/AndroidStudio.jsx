@@ -57,7 +57,7 @@ fun MoltAgentCard(
     Card(
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF1D1810)
+            containerColor = Color(0xFF171C30)
         ),
         modifier = Modifier
             .fillMaxWidth()
@@ -73,19 +73,19 @@ fun MoltAgentCard(
             Column {
                 Text(
                     text = agentName,
-                    color = Color(0xFFEFE7D6),
+                    color = Color(0xFFEDF1FC),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
                     text = role,
-                    color = Color(0xFFB0A488),
+                    color = Color(0xFFA9B2CC),
                     fontSize = 12.sp
                 )
             }
             Surface(
                 shape = RoundedCornerShape(4.dp),
-                color = Color(0xFF2C2416)
+                color = Color(0xFF232A47)
             ) {
                 Text(
                     text = status.uppercase(),
@@ -300,12 +300,12 @@ fun MoltAgentCard(
 
             <div className="phone-frame">
               <div className="phone-screen">
-                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '0.72rem', color: 'var(--bone)', borderBottom: '1px solid var(--seam)', paddingBottom: '6px' }}>
+                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '0.72rem', color: 'var(--frost)', borderBottom: '1px solid var(--seam)', paddingBottom: '6px' }}>
                   MoltAgent Swarm Studio
                 </div>
                 {['Antigravity', 'Grok Build', 'Devin'].map((name, i) => (
                   <div key={i} className="roster-row" style={{ padding: '8px' }}>
-                    <div style={{ fontSize: '0.65rem', color: 'var(--bone)', fontWeight: 700 }}>{name}</div>
+                    <div style={{ fontSize: '0.65rem', color: 'var(--frost)', fontWeight: 700 }}>{name}</div>
                     <div style={{ fontSize: '0.56rem', color: 'var(--ok)', fontFamily: 'var(--font-mono)' }}>ONLINE</div>
                   </div>
                 ))}
@@ -381,7 +381,7 @@ fun MoltAgentCard(
             </div>
             <div className="console" style={{ maxHeight: '260px' }}>
               {cliOutput.map((line, idx) => (
-                <div key={idx} style={{ whiteSpace: 'pre-wrap', color: line.startsWith('$') ? 'var(--amber)' : 'var(--bone-2)' }}>
+                <div key={idx} style={{ whiteSpace: 'pre-wrap', color: line.startsWith('$') ? 'var(--amber)' : 'var(--frost-2)' }}>
                   {line}
                 </div>
               ))}

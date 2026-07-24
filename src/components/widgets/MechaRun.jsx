@@ -228,7 +228,7 @@ export default function MechaRun({ firebaseError, setActiveAgents }) {
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--sp-3)', marginTop: 'var(--sp-3)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-3)', flex: 1, minWidth: '220px' }}>
-                  <label htmlFor="codex-count" style={{ fontSize: '0.7rem', color: 'var(--bone-2)', fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>
+                  <label htmlFor="codex-count" style={{ fontSize: '0.7rem', color: 'var(--frost-2)', fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>
                     Codex agents: <strong style={{ color: 'var(--amber)' }}>{codexCount}</strong>
                   </label>
                   <input
@@ -308,8 +308,8 @@ export default function MechaRun({ firebaseError, setActiveAgents }) {
                   <span className="panel-title" style={{ fontSize: '0.8rem' }}>{item.title}</span>
                   <span className={`badge ${item.status === 'ACTIVE' ? 'hot' : 'ok'}`}>{item.status}</span>
                 </div>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.68rem', color: 'var(--bone-2)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <div>Category · <span style={{ color: 'var(--bone)' }}>{item.category}</span></div>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.68rem', color: 'var(--frost-2)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <div>Category · <span style={{ color: 'var(--frost)' }}>{item.category}</span></div>
                   <div>Size · {item.size}</div>
                   <div>Vector embeddings · <span style={{ color: 'var(--amber)' }}>{item.vectors}</span></div>
                 </div>
@@ -376,10 +376,10 @@ export default function MechaRun({ firebaseError, setActiveAgents }) {
               </div>
               <span className="panel-note">Stripe integration</span>
             </div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.7rem', color: 'var(--bone-2)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <div>Domain target · <span style={{ color: 'var(--bone)' }}>https://moltagent.run</span></div>
-              <div>Secret API key · <code style={{ color: 'var(--amber)', background: 'var(--chitin-2)', padding: '2px 6px' }}>molt_live_sk_948271038a8e1b</code></div>
-              <div>Monthly API credit allowance · <span style={{ color: 'var(--bone)' }}>100,000 / 100,000 credits</span></div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.7rem', color: 'var(--frost-2)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <div>Domain target · <span style={{ color: 'var(--frost)' }}>https://moltagent.run</span></div>
+              <div>Secret API key · <code style={{ color: 'var(--amber)', background: 'var(--ink-2)', padding: '2px 6px' }}>molt_live_sk_948271038a8e1b</code></div>
+              <div>Monthly API credit allowance · <span style={{ color: 'var(--frost)' }}>100,000 / 100,000 credits</span></div>
             </div>
           </div>
 

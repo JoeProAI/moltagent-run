@@ -246,7 +246,7 @@ export default function XGrowth({ setActiveAgents }) {
                 {winningHook.live ? 'Live generation' : 'Simulated'}
               </span>
             </div>
-            <p style={{ fontSize: '0.85rem', color: 'var(--bone)', lineHeight: 1.5, marginBottom: 'var(--sp-2)' }}>
+            <p style={{ fontSize: '0.85rem', color: 'var(--frost)', lineHeight: 1.5, marginBottom: 'var(--sp-2)' }}>
               "{winningHook.text}"
             </p>
             <div className={`metric-sub ${winningHook.live ? 'ok' : ''}`}>{winningHook.viralIndex}</div>

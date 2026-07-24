@@ -35,12 +35,12 @@ const AgentNode = ({ agent }) => {
         {hovered && (
           <Html distanceFactor={15} center zIndexRange={[100, 0]}>
             <div style={{
-              background: 'rgba(11,9,6,0.9)',
-              border: '1px solid #4A3B1E',
+              background: 'rgba(9,11,20,0.92)',
+              border: '1px solid #39426B',
               padding: '12px',
               fontFamily: 'JetBrains Mono',
               fontSize: '0.6rem',
-              color: '#EFE7D6',
+              color: '#EDF1FC',
               minWidth: '150px',
               pointerEvents: 'none',
               textTransform: 'uppercase'
@@ -97,22 +97,22 @@ export default function Canvas3D({ constellationMode, activeAgents }) {
     if (constellationMode === 'android-party') {
       return [
         { id: 'ANTIGRAVITY-CORE', type: 'Master Architect', task: 'Skill & Subagent Harness', load: '99%', position: [0, 2, 0], color: '#E8A832', scale: 0.6, speed: 0.1, speedOffset: 0 },
-        { id: 'GROK-BUILD', type: 'Jetpack Compiler', task: 'Kotlin Optimization', load: '95%', position: [-4, 1, 2], color: '#9BB56E', scale: 0.45, speed: 0.15, speedOffset: 1 },
-        { id: 'DEVIN-ENGINEER', type: 'Full-Stack Android', task: 'ADB & JUnit Testing', load: '92%', position: [4, -1, -2], color: '#B0A488', scale: 0.45, speed: 0.12, speedOffset: 2 },
+        { id: 'GROK-BUILD', type: 'Jetpack Compiler', task: 'Kotlin Optimization', load: '95%', position: [-4, 1, 2], color: '#63E6BE', scale: 0.45, speed: 0.15, speedOffset: 1 },
+        { id: 'DEVIN-ENGINEER', type: 'Full-Stack Android', task: 'ADB & JUnit Testing', load: '92%', position: [4, -1, -2], color: '#8FA3FF', scale: 0.45, speed: 0.12, speedOffset: 2 },
         { id: 'CLAUDE-CODE', type: 'Compose Auditor', task: 'Security & UI Specs', load: '88%', position: [-3, -2, -1], color: '#FFC24B', scale: 0.45, speed: 0.14, speedOffset: 3 },
-        { id: 'HERMES-WORKER', type: 'Workflow Execution', task: 'Autonomous Tasks', load: '90%', position: [3, 2, 1], color: '#EFE7D6', scale: 0.45, speed: 0.13, speedOffset: 4 },
+        { id: 'HERMES-WORKER', type: 'Workflow Execution', task: 'Autonomous Tasks', load: '90%', position: [3, 2, 1], color: '#EDF1FC', scale: 0.45, speed: 0.13, speedOffset: 4 },
         { id: 'ANDROID-APP-TARGET', type: 'APK Build', task: 'Jetpack Compose App', load: '100%', position: [0, -3, 0], color: '#E8A832', scale: 0.5, speed: 0.08, speedOffset: 5 },
-        { id: 'PIXEL-7-AVD', type: 'Emulator Device', task: 'ADB Stream Connected', load: '60%', position: [5, 0, 3], color: '#9BB56E', scale: 0.35, speed: 0.1, speedOffset: 2.5 }
+        { id: 'PIXEL-7-AVD', type: 'Emulator Device', task: 'ADB Stream Connected', load: '60%', position: [5, 0, 3], color: '#63E6BE', scale: 0.35, speed: 0.1, speedOffset: 2.5 }
       ];
     }
 
     if (constellationMode === 'mecha-party') {
       return [
         { id: 'MECHA-PILOT', type: 'Grok Leader', task: 'Consensus Synthesis', load: '99%', position: [0, 3, 0], color: '#E8A832', scale: 0.65, speed: 0.1, speedOffset: 0 },
-        { id: 'MECHA-HARPER', type: 'Researcher', task: 'gBrain Truth Ingest', load: '94%', position: [-5, 1, 2], color: '#EFE7D6', scale: 0.45, speed: 0.14, speedOffset: 1 },
+        { id: 'MECHA-HARPER', type: 'Researcher', task: 'gBrain Truth Ingest', load: '94%', position: [-5, 1, 2], color: '#EDF1FC', scale: 0.45, speed: 0.14, speedOffset: 1 },
         { id: 'MECHA-BENJAMIN', type: 'Critic & Logic', task: 'Stress Testing', load: '91%', position: [5, -1, -2], color: '#FFC24B', scale: 0.45, speed: 0.12, speedOffset: 2 },
-        { id: 'MECHA-LUCAS', type: 'Executor', task: 'Code Generation', load: '96%', position: [-3, -2, -1], color: '#9BB56E', scale: 0.45, speed: 0.15, speedOffset: 3 },
-        { id: 'GBRAIN-MEMORY-CORE', type: 'Grounded Memory', task: 'Vector Truth Bank', load: '100%', position: [0, -3, 0], color: '#B0A488', scale: 0.55, speed: 0.08, speedOffset: 4 },
+        { id: 'MECHA-LUCAS', type: 'Executor', task: 'Code Generation', load: '96%', position: [-3, -2, -1], color: '#63E6BE', scale: 0.45, speed: 0.15, speedOffset: 3 },
+        { id: 'GBRAIN-MEMORY-CORE', type: 'Grounded Memory', task: 'Vector Truth Bank', load: '100%', position: [0, -3, 0], color: '#8FA3FF', scale: 0.55, speed: 0.08, speedOffset: 4 },
         { id: 'CODEX-SWARM-HUB', type: '50-Agent Army', task: 'Parallel Repo Audits', load: '98%', position: [4, 2, 2], color: '#E8A832', scale: 0.5, speed: 0.13, speedOffset: 5 }
       ];
     }
@@ -126,7 +126,7 @@ export default function Canvas3D({ constellationMode, activeAgents }) {
         task: 'Maintaining Structure',
         load: '1%',
         position: [(Math.random() - 0.5) * 20, (Math.random() - 0.5) * 15, (Math.random() - 0.5) * 15],
-        color: '#4A3B1E',
+        color: '#39426B',
         scale: 0.1,
         speed: 0.05,
         speedOffset: Math.random() * Math.PI * 2,
@@ -139,7 +139,7 @@ export default function Canvas3D({ constellationMode, activeAgents }) {
       task: 'Routing intel',
       load: '5%',
       position: [0, 0, 0],
-      color: '#EFE7D6',
+      color: '#EDF1FC',
       scale: 0.5,
       speed: 0.05,
       speedOffset: 0,
@@ -153,7 +153,7 @@ export default function Canvas3D({ constellationMode, activeAgents }) {
   return (
     <div className="canvas-container">
       <Canvas camera={{ position: [0, 0, 15], fov: 60 }}>
-        <color attach="background" args={['#0B0906']} />
+        <color attach="background" args={['#090B14']} />
         <ambientLight intensity={0.1} />
         <pointLight position={[10, 10, 10]} intensity={1} color="#ffffff" />
         <pointLight position={[-10, -10, -10]} intensity={0.5} color="#E8A832" />
