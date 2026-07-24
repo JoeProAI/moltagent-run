@@ -51,6 +51,23 @@ export class XGrowthMultiplier {
       return { success: false, message: `Failed to reach the hook generator: ${err.message}` };
     }
   }
+
+  async expandThread(draft) {
+    try {
+      const response = await fetch('/api/generate-hooks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ topic: draft, mode: 'thread' })
+      });
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        return { success: false, message: result.message || `Thread API error (${response.status})` };
+      }
+      return result;
+    } catch (err) {
+      return { success: false, message: `Failed to reach the thread expander: ${err.message}` };
+    }
+  }
 }
 
 export default XGrowthMultiplier;

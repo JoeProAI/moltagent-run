@@ -9,7 +9,10 @@ import {
   Key,
   RefreshCw,
   AlertTriangle,
-  CheckCircle2
+  CheckCircle2,
+  MessageCircle,
+  Copy,
+  Check
 } from 'lucide-react';
 import XGrowthMultiplier from '../../../x_api_integration';
 
@@ -22,6 +25,45 @@ export default function XGrowth({ setActiveAgents }) {
   const [topicInput, setTopicInput] = useState('Why multi-agent coding swarms render single LLM frameworks obsolete');
   const [isSimulating, setIsSimulating] = useState(false);
   const [winningHook, setWinningHook] = useState(null);
+
+  // Thread builder
+  const [postDraft, setPostDraft] = useState(
+    'We stopped building single-agent LLM wrappers. Here is how 50 specialized AI agents orchestrate parallel codebase sweeps on MoltAgent.run:'
+  );
+  const [generatedThread, setGeneratedThread] = useState(null);
+  const [isExpanding, setIsExpanding] = useState(false);
+  const [copiedIndex, setCopiedIndex] = useState(null);
+
+  const handleExpandThread = async () => {
+    if (isExpanding) return;
+    setIsExpanding(true);
+
+    const xClient = new XGrowthMultiplier();
+    const result = await xClient.expandThread(postDraft);
+
+    setIsExpanding(false);
+    if (result.success && result.tweets?.length) {
+      setGeneratedThread({ tweets: result.tweets, live: true, note: 'Live generation' });
+    } else {
+      setGeneratedThread({
+        live: false,
+        note: `Simulated — ${result.message || 'thread API unavailable'}`,
+        tweets: [
+          '1/5 We stopped building single-agent LLM wrappers. Here is how 50 specialized AI agents orchestrate parallel codebase sweeps on MoltAgent.run:',
+          '2/5 The problem with standard AI coding tools is context choking. One LLM gets overwhelmed trying to read 50,000 lines of code simultaneously.',
+          '3/5 MoltAgent dispatches 50 isolated sandboxes (Antigravity, Grok Build, Devin, Claude Code) working concurrently on the same repo.',
+          '4/5 Memory stays clean behind the Carapax firewall: 5 security planes, trust floors, Ed25519-signed identity files.',
+          '5/5 Try it live at https://moltagent.run or read the code at https://github.com/JoeProAI/moltagent-run'
+        ]
+      });
+    }
+  };
+
+  const handleCopyText = (text, idx) => {
+    navigator.clipboard.writeText(text);
+    setCopiedIndex(idx);
+    setTimeout(() => setCopiedIndex(null), 2000);
+  };
 
   // Attempt live X API fetch when bearer token is entered
   const fetchRealXData = async (tokenToUse) => {
@@ -220,6 +262,71 @@ export default function XGrowth({ setActiveAgents }) {
                 ))}
               </div>
             )}
+          </div>
+        )}
+      </div>
+
+      {/* Thread Builder */}
+      <div className="panel">
+        <div className="panel-head">
+          <div className="panel-title">
+            <MessageCircle size={15} />
+            Thread builder
+          </div>
+          <span className="panel-note">Turns one draft into a ready-to-post 5-tweet thread</span>
+        </div>
+
+        <label className="field-label" htmlFor="thread-draft">Your draft post or idea</label>
+        <textarea
+          id="thread-draft"
+          className="textarea"
+          value={postDraft}
+          onChange={(e) => setPostDraft(e.target.value)}
+          rows={3}
+        />
+
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 'var(--sp-3)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+            <button
+              type="button"
+              className="btn primary"
+              onClick={handleExpandThread}
+              disabled={isExpanding}
+            >
+              {isExpanding ? <RefreshCw size={14} className="spin" /> : <MessageCircle size={14} />}
+              {isExpanding ? 'Expanding thread…' : 'Expand into 5-tweet thread'}
+            </button>
+            <span className="btn-hint">Each tweet gets its own copy button</span>
+          </div>
+        </div>
+
+        {generatedThread && (
+          <div style={{ marginTop: 'var(--sp-3)', display: 'flex', flexDirection: 'column', gap: 'var(--sp-2)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span className={`badge ${generatedThread.live ? 'ok' : ''}`}>{generatedThread.note}</span>
+              <button
+                type="button"
+                className="btn quiet"
+                onClick={() => handleCopyText(generatedThread.tweets.join('\n\n'), 'all')}
+              >
+                {copiedIndex === 'all' ? <Check size={14} /> : <Copy size={14} />}
+                {copiedIndex === 'all' ? 'Copied whole thread' : 'Copy whole thread'}
+              </button>
+            </div>
+
+            {generatedThread.tweets.map((tweet, idx) => (
+              <div key={idx} className="log-block" style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 'var(--sp-3)', display: 'flex' }}>
+                <span className="log-msg" style={{ flex: 1, whiteSpace: 'pre-wrap' }}>{tweet}</span>
+                <button
+                  type="button"
+                  className="btn quiet"
+                  aria-label={`Copy tweet ${idx + 1}`}
+                  onClick={() => handleCopyText(tweet, idx)}
+                >
+                  {copiedIndex === idx ? <Check size={14} /> : <Copy size={14} />}
+                </button>
+              </div>
+            ))}
           </div>
         )}
       </div>

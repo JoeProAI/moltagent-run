@@ -2,6 +2,21 @@ import Anthropic from '@anthropic-ai/sdk';
 
 export const config = { maxDuration: 60 };
 
+const THREAD_SCHEMA = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['tweets'],
+  properties: {
+    tweets: {
+      type: 'array',
+      items: {
+        type: 'string',
+        description: 'One tweet in the thread, numbered n/5, under 280 chars'
+      }
+    }
+  }
+};
+
 const HOOK_SCHEMA = {
   type: 'object',
   additionalProperties: false,
@@ -39,14 +54,41 @@ export default async function handler(req, res) {
     });
   }
 
-  const { topic, count = 25 } = req.body || {};
-  if (!topic || typeof topic !== 'string' || topic.length > 500) {
-    return res.status(400).json({ success: false, message: 'Provide a topic under 500 chars.' });
+  const { topic, count = 25, mode = 'hooks' } = req.body || {};
+  if (!topic || typeof topic !== 'string' || topic.length > 1000) {
+    return res.status(400).json({ success: false, message: 'Provide a topic under 1000 chars.' });
   }
   const n = Math.min(Math.max(Number(count) || 25, 5), 25);
 
   try {
     const client = new Anthropic();
+
+    if (mode === 'thread') {
+      const response = await client.messages.create({
+        model: 'claude-opus-4-8',
+        max_tokens: 4000,
+        thinking: { type: 'adaptive' },
+        output_config: {
+          effort: 'medium',
+          format: { type: 'json_schema', schema: THREAD_SCHEMA }
+        },
+        system:
+          'You expand a draft post into a 5-tweet X thread for @JoePro, an AI developer who ships multi-agent systems in public. ' +
+          'Voice: direct, technical, concrete, zero fluff, no emoji, no hashtags. ' +
+          'Tweet 1 is the hook (may closely follow the draft), tweets 2-4 deliver substance with specifics, tweet 5 closes with a call to action. ' +
+          'Number each tweet n/5. Every tweet under 280 characters.',
+        messages: [
+          { role: 'user', content: `Expand this draft into a 5-tweet thread:\n\n${topic}` }
+        ]
+      });
+
+      if (response.stop_reason === 'refusal') {
+        return res.status(200).json({ success: false, message: 'Generation declined for this draft.' });
+      }
+      const textBlock = response.content.find((b) => b.type === 'text');
+      const parsed = JSON.parse(textBlock.text);
+      return res.status(200).json({ success: true, tweets: parsed.tweets, model: response.model });
+    }
     const response = await client.messages.create({
       model: 'claude-opus-4-8',
       max_tokens: 8000,
