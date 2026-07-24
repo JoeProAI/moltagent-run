@@ -39,7 +39,6 @@ function App() {
   // If anonymous auth isn't enabled on the project (or we're offline), fall
   // back to a browser-local sandbox instead of writing to shared state.
   useEffect(() => {
-    /* eslint-disable react-hooks/set-state-in-effect */
     let cancelled = false;
     const unsub = onAuthStateChanged(auth, (user) => {
       if (cancelled) return;
@@ -55,14 +54,12 @@ function App() {
       cancelled = true;
       unsub();
     };
-    /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
 
   // Real-time sync, scoped to this session only. No session id → no listeners
   // (local mode drives everything from component state instead).
   useEffect(() => {
     if (!sessionId) return;
-    /* eslint-disable react-hooks/set-state-in-effect */
 
     const agentsQuery = query(collection(db, 'activeAgents'), where('owner', '==', sessionId));
     const unsubscribeAgents = onSnapshot(
@@ -95,7 +92,6 @@ function App() {
       unsubscribeAgents();
       unsubscribeState();
     };
-    /* eslint-enable react-hooks/set-state-in-effect */
   }, [sessionId]);
 
   // Derive canvas constellation from active widget selection

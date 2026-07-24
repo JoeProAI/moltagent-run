@@ -1,7 +1,7 @@
 
 export default function Sidebar({ activeWidget, setActiveWidget, setConstellation }) {
   const plates = [
-    { id: 'android-studio', num: 'S1', label: 'ANDROID SWARM', role: '5-agent build crew', mode: 'android-party' },
+    { id: 'android-studio', num: 'S1', label: 'APP SWARM', role: 'Web · mobile · backend', mode: 'android-party' },
     { id: 'carapace-firewall', num: 'S2', label: 'CARAPAX FIREWALL', role: 'Memory integrity', mode: 'carapace-sec' },
     { id: 'mecha-run', num: 'S3', label: 'M.E.C.H.A. RUN', role: '60-agent orchestrator', mode: 'mecha-party' },
     { id: 'factory', num: 'S4', label: 'AGENT FACTORY', role: 'Spawn swarm crews', mode: 'cinematic' },
