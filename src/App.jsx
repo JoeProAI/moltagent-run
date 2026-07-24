@@ -4,6 +4,7 @@ import TopBar from './components/TopBar';
 import Canvas3D from './components/Canvas3D';
 import MouseConstellation from './components/MouseConstellation';
 import AndroidStudio from './components/widgets/AndroidStudio';
+import CarapaceFirewall from './components/widgets/CarapaceFirewall';
 import MechaRun from './components/widgets/MechaRun';
 import AgentFactory from './components/widgets/AgentFactory';
 import XGrowth from './components/widgets/XGrowth';
@@ -57,6 +58,7 @@ function App() {
   // Update canvas nodes based on active widget
   useEffect(() => {
     if (activeWidget === 'android-studio') setConstellation('android-party');
+    else if (activeWidget === 'carapace-firewall') setConstellation('carapace-sec');
     else if (activeWidget === 'mecha-run') setConstellation('mecha-party');
     else if (activeWidget === 'factory') setConstellation('cinematic');
     else if (activeWidget === 'x-growth') setConstellation('x-growth');
@@ -87,6 +89,9 @@ function App() {
         <div className="widgets-container">
           {activeWidget === 'android-studio' && (
             <AndroidStudio setActiveAgents={setActiveAgents} activeAgents={activeAgents} firebaseError={firebaseError} />
+          )}
+          {activeWidget === 'carapace-firewall' && (
+            <CarapaceFirewall />
           )}
           {activeWidget === 'mecha-run' && (
             <MechaRun firebaseError={firebaseError} />

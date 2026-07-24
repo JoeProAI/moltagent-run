@@ -1,9 +1,10 @@
 import React from 'react';
-import { Network, Rocket, Layers, Smartphone, Zap, Activity, Database, Settings } from 'lucide-react';
+import { Network, Rocket, Layers, Smartphone, Zap, ShieldCheck, Activity, Database, Settings } from 'lucide-react';
 
 export default function Sidebar({ activeWidget, setActiveWidget, setConstellation, isSynced }) {
   const menuItems = [
     { id: 'android-studio', icon: <Smartphone size={18} strokeWidth={1.5} />, label: 'ANDROID SWARM', mode: 'android-party' },
+    { id: 'carapace-firewall', icon: <ShieldCheck size={18} strokeWidth={1.5} />, label: 'CARAPAX FIREWALL', mode: 'carapace-sec' },
     { id: 'mecha-run', icon: <Zap size={18} strokeWidth={1.5} />, label: 'M.E.C.H.A. RUN', mode: 'mecha-party' },
     { id: 'factory', icon: <Network size={18} strokeWidth={1.5} />, label: 'AGENT FACTORY', mode: 'cinematic' },
     { id: 'x-growth', icon: <Rocket size={18} strokeWidth={1.5} />, label: 'X MULTIPLIER', mode: 'x-growth' },
