@@ -87,8 +87,12 @@ function App() {
         <TopBar daytonaCredits={daytonaCredits} activeNodes={activeAgents.length} />
         
         <div className="widgets-container">
+          {/* Widgets Render Workspace */}
           {activeWidget === 'android-studio' && (
             <AndroidStudio setActiveAgents={setActiveAgents} activeAgents={activeAgents} firebaseError={firebaseError} />
+          )}
+          {activeWidget === 'x-growth' && (
+            <XGrowth setActiveAgents={setActiveAgents} firebaseError={firebaseError} />
           )}
           {activeWidget === 'carapace-firewall' && (
             <CarapaceFirewall />
