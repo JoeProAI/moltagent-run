@@ -1,38 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Rocket, 
   TrendingUp, 
   Users, 
   Zap, 
   Play, 
-  CheckCircle2, 
   BarChart2, 
   Share2, 
   Sparkles,
-  MessageSquare,
-  Award,
-  RefreshCw
+  Key,
+  RefreshCw,
+  AlertTriangle,
+  CheckCircle2
 } from 'lucide-react';
+import XGrowthMultiplier from '../../../x_api_integration';
 
 export default function XGrowth({ setActiveAgents }) {
+  const [bearerToken, setBearerToken] = useState('');
+  const [isFetchingLive, setIsFetchingLive] = useState(false);
+  const [liveData, setLiveData] = useState(null);
+  const [apiError, setApiError] = useState(null);
+
   const [topicInput, setTopicInput] = useState('Why multi-agent coding swarms render single LLM frameworks obsolete');
   const [isSimulating, setIsSimulating] = useState(false);
   const [winningHook, setWinningHook] = useState(null);
 
-  // Real Account Telemetry Data (@JoePro)
-  const xAccountData = {
-    handle: '@JoePro',
-    accountName: 'JoePro',
-    status: 'AUTHENTICATED (OAuth 2.0 PKCE)',
-    impressions48h: '4,285,100',
-    followerDelta: '+12,450',
-    retentionScore: '94.2%',
-    pointsEarned: '48,920 PTS',
-    topPosts: [
-      { hook: 'The fundamental flaw with single-agent LLM wrappers?', impressions: '1.2M', engagement: '8.4%' },
-      { hook: 'How 50 Codex CLI agents run parallel repo sweeps:', impressions: '940K', engagement: '9.1%' },
-      { hook: 'Introducing Carapax: Deterministic Memory-Integrity Firewall', impressions: '820K', engagement: '11.2%' }
-    ]
+  // Attempt live X API fetch when bearer token is entered
+  const fetchRealXData = async (tokenToUse) => {
+    if (!tokenToUse || tokenToUse.trim() === '') {
+      setApiError('X API Bearer Token required to fetch live @JoePro account stats.');
+      return;
+    }
+
+    setIsFetchingLive(true);
+    setApiError(null);
+
+    const xClient = new XGrowthMultiplier(tokenToUse);
+    const result = await xClient.fetchLiveAccountMetrics('JoePro');
+
+    setIsFetchingLive(false);
+    if (result.success) {
+      setLiveData(result);
+    } else {
+      setApiError(result.message || 'X API Connection Error');
+    }
   };
 
   const handleRunDebateSimulation = () => {
@@ -59,8 +70,7 @@ export default function XGrowth({ setActiveAgents }) {
       setWinningHook({
         text: `Stop asking one LLM a question. Walk into a room with 50 specialized agents, give them the same codebase, and collect 50 expert perspectives simultaneously. Here's how MoltAgent.run changes everything:`,
         score: '96.8% PREDICTED RETENTION',
-        viralIndex: 'HIGH VIRAL SIGNAL (9.4/10)',
-        pointsAllocated: '+2,500 CREATOR PTS'
+        viralIndex: 'HIGH VIRAL SIGNAL (9.4/10)'
       });
     }, 2800);
   };
@@ -95,12 +105,12 @@ export default function XGrowth({ setActiveAgents }) {
           <div>
             <div style={{ fontSize: '1rem', fontWeight: '700', color: '#FFF', display: 'flex', alignItems: 'center', gap: '10px' }}>
               X CREATOR GROWTH & DATA MULTIPLIER
-              <span style={{ fontSize: '0.62rem', background: '#00F0FF', color: '#000', fontWeight: 'bold', padding: '2px 8px', borderRadius: '4px' }}>
-                LIVE @JoePro AUTHENTICATED
+              <span style={{ fontSize: '0.62rem', background: liveData ? '#00FF66' : '#1F222E', color: liveData ? '#000' : '#FFF', fontWeight: 'bold', padding: '2px 8px', borderRadius: '4px' }}>
+                {liveData ? 'LIVE X API CONNECTED' : 'UNAUTHENTICATED'}
               </span>
             </div>
             <p style={{ fontSize: '0.72rem', color: '#94A3B8', marginTop: '2px', fontFamily: 'var(--font-mono)' }}>
-              OAuth 2.0 PKCE • Real-Time Impression Telemetry • Society-of-Mind Viral Hook Generator
+              Target Account: @JoePro • Official Twitter API v2 Integration
             </p>
           </div>
         </div>
@@ -116,13 +126,57 @@ export default function XGrowth({ setActiveAgents }) {
         </button>
       </div>
 
-      {/* Real Live X Data Metrics Cards */}
+      {/* Real X API Credentials Connection Deck */}
+      <div className="card" style={{ background: '#090A0E', padding: '16px' }}>
+        <div style={{ fontSize: '0.8rem', fontWeight: '700', color: '#FFF', fontFamily: 'var(--font-mono)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Key size={16} color="#00F0FF" />
+          CONNECT REAL X (TWITTER) DEVELOPER BEARER TOKEN FOR @JoePro
+        </div>
+
+        <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
+          <input
+            type="password"
+            placeholder="Paste X API v2 Bearer Token (AAAA...)"
+            value={bearerToken}
+            onChange={(e) => setBearerToken(e.target.value)}
+            style={{
+              flexGrow: 1,
+              background: '#060608',
+              border: '1px solid #1F222E',
+              borderRadius: '6px',
+              color: '#FFF',
+              padding: '10px 14px',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.78rem',
+              outline: 'none'
+            }}
+          />
+          <button
+            onClick={() => fetchRealXData(bearerToken)}
+            disabled={isFetchingLive}
+            className="button button-primary"
+            style={{ padding: '0 20px', fontSize: '0.75rem' }}
+          >
+            {isFetchingLive ? <RefreshCw size={14} className="spin" /> : <CheckCircle2 size={14} />}
+            {isFetchingLive ? 'CONNECTING...' : 'SYNC REAL DATA'}
+          </button>
+        </div>
+
+        {apiError && (
+          <div style={{ marginTop: '10px', fontSize: '0.72rem', color: '#FF4444', fontFamily: 'var(--font-mono)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <AlertTriangle size={14} />
+            {apiError}
+          </div>
+        )}
+      </div>
+
+      {/* Live Data Display Cards (Only Displays Real API Data When Synced) */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
         {[
-          { label: '48H ORGANIC IMPRESSIONS', value: xAccountData.impressions48h, sub: 'Real-Time X API v2 Feed', color: '#00F0FF', icon: <BarChart2 size={16} /> },
-          { label: 'FOLLOWER DELTA (NET)', value: xAccountData.followerDelta, sub: 'Targeted High-Signal Devs', color: '#00FF66', icon: <Users size={16} /> },
-          { label: 'AVG HOOK RETENTION SCORE', value: xAccountData.retentionScore, sub: 'Society-of-Mind Benchmark', color: '#FFD700', icon: <TrendingUp size={16} /> },
-          { label: 'CREATOR REWARD POINTS', value: xAccountData.pointsEarned, sub: 'MoltAgent Data Pool', color: '#A855F7', icon: <Award size={16} /> }
+          { label: 'REAL @JoePro FOLLOWERS', value: liveData ? liveData.followersCount.toLocaleString() : 'PENDING SYNC', sub: liveData ? 'Live X API v2 Count' : 'Enter Bearer Token Above', color: '#00F0FF', icon: <Users size={16} /> },
+          { label: 'TOTAL TWEET COUNT', value: liveData ? liveData.tweetCount.toLocaleString() : 'PENDING SYNC', sub: liveData ? 'Live Published Tweets' : 'Enter Bearer Token Above', color: '#00FF66', icon: <BarChart2 size={16} /> },
+          { label: 'FOLLOWING COUNT', value: liveData ? liveData.followingCount.toLocaleString() : 'PENDING SYNC', sub: liveData ? 'Live X API v2 Count' : 'Enter Bearer Token Above', color: '#FFD700', icon: <TrendingUp size={16} /> },
+          { label: 'PUBLIC LISTINGS', value: liveData ? liveData.listedCount.toLocaleString() : 'PENDING SYNC', sub: liveData ? 'Curated Dev Lists' : 'Enter Bearer Token Above', color: '#A855F7', icon: <Share2 size={16} /> }
         ].map((stat, idx) => (
           <div key={idx} className="card" style={{ background: '#0E0F14', border: '1px solid #1F222E' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
@@ -139,7 +193,7 @@ export default function XGrowth({ setActiveAgents }) {
       <div className="card" style={{ background: '#0E0F14' }}>
         <div style={{ fontSize: '0.8rem', fontWeight: '700', color: '#FFF', fontFamily: 'var(--font-mono)', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Zap size={16} color="#00F0FF" />
-          SOCIETY-OF-MIND PARALLEL A/B HOOK GENERATOR (25 GEMINI INSTANCES)
+          PARALLEL A/B VIRAL TWEET HOOK SIMULATOR (25 GEMINI INSTANCES)
         </div>
 
         <textarea
@@ -173,9 +227,6 @@ export default function XGrowth({ setActiveAgents }) {
               <span style={{ fontSize: '0.7rem', fontWeight: '700', color: '#00F0FF', fontFamily: 'var(--font-mono)' }}>
                 🏆 WINNING VIRAL HOOK (96.8% RETENTION)
               </span>
-              <span style={{ fontSize: '0.62rem', background: '#00F0FF', color: '#000', padding: '2px 6px', borderRadius: '4px', fontWeight: '700' }}>
-                {winningHook.pointsAllocated}
-              </span>
             </div>
             <p style={{ fontSize: '0.82rem', color: '#FFF', lineHeight: '1.4', marginBottom: '8px', fontWeight: '500' }}>
               "{winningHook.text}"
@@ -185,43 +236,6 @@ export default function XGrowth({ setActiveAgents }) {
             </div>
           </div>
         )}
-      </div>
-
-      {/* Top Performing X Posts Table */}
-      <div className="card" style={{ background: '#0E0F14' }}>
-        <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#FFF', fontFamily: 'var(--font-mono)', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Share2 size={14} color="#94A3B8" />
-          AUTHENTICATED X POST ANALYTICS (@JoePro)
-        </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {xAccountData.topPosts.map((post, index) => (
-            <div key={index} style={{
-              padding: '10px 12px',
-              borderRadius: '6px',
-              background: '#060608',
-              border: '1px solid #1F222E',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center'
-            }}>
-              <div style={{ flexGrow: 1, paddingRight: '12px' }}>
-                <div style={{ fontSize: '0.78rem', color: '#FFF', fontWeight: '500' }}>"{post.hook}"</div>
-                <div style={{ fontSize: '0.62rem', color: '#64748B', fontFamily: 'var(--font-mono)', marginTop: '2px' }}>Post ID: x_post_{8892 + index}</div>
-              </div>
-              <div style={{ display: 'flex', gap: '16px', textAlign: 'right', fontFamily: 'var(--font-mono)' }}>
-                <div>
-                  <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#00F0FF' }}>{post.impressions}</div>
-                  <div style={{ fontSize: '0.58rem', color: '#64748B' }}>IMPRESSIONS</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#00FF66' }}>{post.engagement}</div>
-                  <div style={{ fontSize: '0.58rem', color: '#64748B' }}>ENGAGEMENT</div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
       </div>
 
     </div>
