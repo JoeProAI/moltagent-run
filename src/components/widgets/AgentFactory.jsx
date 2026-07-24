@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Zap, Loader } from 'lucide-react';
-import { db, doc, setDoc, deleteDoc, collection, getDocs, writeBatch } from '../../firebase';
+import { Play, Square, Network, Loader } from 'lucide-react';
+import { db, doc, collection, getDocs, writeBatch } from '../../firebase';
 
 export default function AgentFactory({ activeAgents, firebaseError, setActiveAgents }) {
   const [runningSwarms, setRunningSwarms] = useState({
@@ -20,10 +20,10 @@ export default function AgentFactory({ activeAgents, firebaseError, setActiveAge
 
   const toggleSwarm = async (id, count, swarmType, taskPrefix) => {
     const isCurrentlyRunning = runningSwarms[id];
-    
+
     // Optimistic / Fallback UI update
     setRunningSwarms(prev => ({ ...prev, [id]: !isCurrentlyRunning }));
-    
+
     if (firebaseError) {
       // Degraded simulation mode
       if (isCurrentlyRunning) {
@@ -35,7 +35,7 @@ export default function AgentFactory({ activeAgents, firebaseError, setActiveAge
           type: swarmType,
           task: `${taskPrefix} partition ${i}`,
           load: Math.floor(Math.random() * 40) + 10 + '%',
-          color: id === 'core' ? '#D4AF37' : '#F0F4F8',
+          color: id === 'core' ? '#E8A832' : '#EFE7D6',
           position: [(Math.random() - 0.5) * 20, (Math.random() - 0.5) * 15, (Math.random() - 0.5) * 15],
           scale: Math.random() * 0.15 + 0.1,
           speed: Math.random() * 0.2 + 0.1,
@@ -49,7 +49,7 @@ export default function AgentFactory({ activeAgents, firebaseError, setActiveAge
     // Real Firebase Logic
     try {
       const batch = writeBatch(db);
-      
+
       if (isCurrentlyRunning) {
         // Destroy swarm
         const querySnapshot = await getDocs(collection(db, "activeAgents"));
@@ -60,7 +60,7 @@ export default function AgentFactory({ activeAgents, firebaseError, setActiveAge
         });
       } else {
         // Generate and push swarm to DB
-        for(let i=0; i<count; i++) {
+        for (let i = 0; i < count; i++) {
           const agentId = `${id}-node-${i}`;
           const agentRef = doc(db, "activeAgents", agentId);
           batch.set(agentRef, {
@@ -68,7 +68,7 @@ export default function AgentFactory({ activeAgents, firebaseError, setActiveAge
             type: swarmType,
             task: `${taskPrefix} partition ${i}`,
             load: Math.floor(Math.random() * 40) + 10 + '%',
-            color: id === 'core' ? '#D4AF37' : '#F0F4F8',
+            color: id === 'core' ? '#E8A832' : '#EFE7D6',
             position: [(Math.random() - 0.5) * 20, (Math.random() - 0.5) * 15, (Math.random() - 0.5) * 15],
             scale: Math.random() * 0.15 + 0.1,
             speed: Math.random() * 0.2 + 0.1,
@@ -82,80 +82,88 @@ export default function AgentFactory({ activeAgents, firebaseError, setActiveAge
     }
   };
 
+  const swarms = [
+    {
+      id: 'video',
+      name: 'Cinematic video swarm',
+      nodes: 30,
+      desc: 'Imagen 3 + VideoFX rendering at 4K across 30 parallel nodes.',
+      type: 'Video Render',
+      prefix: 'Rendering frame batch'
+    },
+    {
+      id: 'research',
+      name: 'Research nebula',
+      nodes: 15,
+      desc: 'Google Knowledge Graph sync across 15 crawler nodes.',
+      type: 'Data Indexing',
+      prefix: 'Crawling subgraph'
+    },
+    {
+      id: 'core',
+      name: 'Self-evolving core',
+      nodes: 5,
+      desc: 'Society-of-Mind debate loop across 5 reasoning nodes.',
+      type: 'Debate Engine',
+      prefix: 'Hypothesizing architecture'
+    }
+  ];
+
   return (
-    <div className="glass-panel" style={{ padding: '32px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-      <div className="widget-header">
-        <h2 className="widget-title">
-          <Zap size={20} color="#D4AF37" />
-          CONSTELLATION FACTORY
-        </h2>
-        <button className="glass-button primary" onClick={() => toggleSwarm('manual', 5, 'General', 'Awaiting task')}>
-          NEW SWARM
-        </button>
-      </div>
+    <div className="module">
 
-      <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginBottom: '32px', fontFamily: 'JetBrains Mono' }}>
-        Deploy parallel crews to Firestore. Hover over orbs in canvas to view live DB metrics.
-      </p>
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-        <div className="agent-card">
-          <div>
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '12px' }}>
-              <h3 style={{ margin: 0, fontSize: '1rem', letterSpacing: '0.05em' }}>CINEMATIC VIDEO SWARM</h3>
-              {runningSwarms.video ? <span className="badge active">RUNNING</span> : <span className="badge">STANDBY</span>}
-            </div>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', margin: 0, fontFamily: 'JetBrains Mono' }}>
-              Imagen 3 + VideoFX (4K). 30 nodes.
-            </p>
-          </div>
-          <button 
-            className="glass-button" 
-            style={{ padding: '12px', borderRadius: '50%' }}
-            onClick={() => toggleSwarm('video', 30, 'Video Render', 'Rendering frame batch')} // Scaled down to 30 for DB performance limits
-          >
-            {runningSwarms.video ? <Loader className="floating" size={16} /> : <Play size={16} />}
-          </button>
+      <div className="masthead">
+        <div>
+          <div className="masthead-eyebrow">S4 · Agent factory</div>
+          <h2 className="masthead-title">Spawn and retire swarm crews</h2>
+          <p className="masthead-sub">
+            Each crew writes live agent nodes to Firestore. Hover the orbs in the ambient canvas
+            to inspect any node's task and load in real time.
+          </p>
         </div>
-
-        <div className="agent-card">
-          <div>
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '12px' }}>
-              <h3 style={{ margin: 0, fontSize: '1rem', letterSpacing: '0.05em' }}>RESEARCH NEBULA</h3>
-              {runningSwarms.research ? <span className="badge active">RUNNING</span> : <span className="badge">STANDBY</span>}
-            </div>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', margin: 0, fontFamily: 'JetBrains Mono' }}>
-              Google Knowledge Graph Sync. 15 nodes.
-            </p>
-          </div>
-          <button 
-            className="glass-button" 
-            style={{ padding: '12px', borderRadius: '50%' }}
-            onClick={() => toggleSwarm('research', 15, 'Data Indexing', 'Crawling subgraph')}
+        <div className="masthead-actions">
+          <button
+            type="button"
+            className="btn"
+            onClick={() => toggleSwarm('manual', 5, 'General', 'Awaiting task')}
           >
-            {runningSwarms.research ? <Loader className="floating" size={16} /> : <Play size={16} />}
-          </button>
-        </div>
-
-        <div className="agent-card">
-          <div>
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '12px' }}>
-              <h3 style={{ margin: 0, fontSize: '1rem', letterSpacing: '0.05em' }}>SELF-EVOLVING CORE</h3>
-              {runningSwarms.core ? <span className="badge active">ACTIVE</span> : <span className="badge">STANDBY</span>}
-            </div>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', margin: 0, fontFamily: 'JetBrains Mono' }}>
-              Society of Mind debate. 5 nodes.
-            </p>
-          </div>
-          <button 
-            className="glass-button" 
-            style={{ padding: '12px', borderRadius: '50%' }}
-            onClick={() => toggleSwarm('core', 5, 'Debate Engine', 'Hypothesizing architecture')}
-          >
-            {runningSwarms.core ? <Loader className="floating" size={16} /> : <Play size={16} />}
+            <Network size={14} />
+            Spawn custom swarm
           </button>
         </div>
       </div>
+
+      <div className="grid cols-3">
+        {swarms.map(swarm => {
+          const running = runningSwarms[swarm.id];
+          return (
+            <div key={swarm.id} className="panel" style={running ? { borderColor: 'var(--amber)' } : undefined}>
+              <div className="panel-head">
+                <div className="panel-title">{swarm.name}</div>
+                <span className={`badge ${running ? 'hot' : ''}`}>{running ? 'Running' : 'Standby'}</span>
+              </div>
+              <p className="panel-sub">{swarm.desc}</p>
+
+              <div className={`segmeter ${running ? 'running' : ''}`} aria-hidden="true" style={{ marginBottom: 'var(--sp-4)' }}>
+                {[...Array(10)].map((_, i) => (
+                  <span key={i} className={running && i < Math.ceil(swarm.nodes / 3) ? 'lit' : ''} />
+                ))}
+              </div>
+
+              <button
+                type="button"
+                className={`btn ${running ? '' : 'primary'}`}
+                style={{ width: '100%' }}
+                onClick={() => toggleSwarm(swarm.id, swarm.nodes, swarm.type, swarm.prefix)}
+              >
+                {running ? <Square size={14} /> : <Play size={14} />}
+                {running ? 'Stop swarm' : `Launch ${swarm.nodes} nodes`}
+              </button>
+            </div>
+          );
+        })}
+      </div>
+
     </div>
   );
 }

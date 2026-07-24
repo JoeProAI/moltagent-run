@@ -1,17 +1,19 @@
 import React, { useEffect, useRef } from 'react';
 
+// Amber-resin constellation: monochrome accent particles that drift and
+// gather toward the cursor. Disabled entirely under prefers-reduced-motion.
 const COLORS = [
-  { main: '#00F0FF', glow: 'rgba(0, 240, 255' },
-  { main: '#0066FF', glow: 'rgba(0, 102, 255' },
-  { main: '#A855F7', glow: 'rgba(168, 85, 247' },
-  { main: '#FFD700', glow: 'rgba(255, 215, 0' },
-  { main: '#00FF66', glow: 'rgba(0, 255, 102' }
+  { main: '#E8A832', glow: 'rgba(232, 168, 50' },
+  { main: '#FFC24B', glow: 'rgba(255, 194, 75' },
+  { main: '#B0A488', glow: 'rgba(176, 164, 136' }
 ];
 
 export default function MouseConstellation() {
   const canvasRef = useRef(null);
 
   useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -34,16 +36,15 @@ export default function MouseConstellation() {
     };
     window.addEventListener('mousemove', handleMouseMove);
 
-    // Create 110 drifting constellation nodes
     const nodes = [];
-    for (let i = 0; i < 110; i++) {
+    for (let i = 0; i < 80; i++) {
       const colorScheme = COLORS[Math.floor(Math.random() * COLORS.length)];
       nodes.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4,
-        radius: Math.random() * 1.6 + 0.8,
+        vx: (Math.random() - 0.5) * 0.35,
+        vy: (Math.random() - 0.5) * 0.35,
+        radius: Math.random() * 1.4 + 0.6,
         color: colorScheme.main,
         glowColor: colorScheme.glow
       });
@@ -71,13 +72,12 @@ export default function MouseConstellation() {
           node.y += dy * force * 0.03;
         }
 
-        // Draw particle
         ctx.beginPath();
         ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
         ctx.fillStyle = node.color;
-        ctx.shadowColor = node.color;
-        ctx.shadowBlur = 6;
+        ctx.globalAlpha = 0.55;
         ctx.fill();
+        ctx.globalAlpha = 1;
 
         // Connect nearby nodes
         nodes.slice(i + 1).forEach((other) => {
@@ -85,13 +85,12 @@ export default function MouseConstellation() {
           const ody = other.y - node.y;
           const odist = Math.sqrt(odx * odx + ody * ody);
           if (odist < 100) {
-            const alpha = (1 - odist / 100) * 0.18;
+            const alpha = (1 - odist / 100) * 0.14;
             ctx.beginPath();
             ctx.moveTo(node.x, node.y);
             ctx.lineTo(other.x, other.y);
             ctx.strokeStyle = `${node.glowColor}, ${alpha})`;
             ctx.lineWidth = 0.6;
-            ctx.shadowBlur = 0;
             ctx.stroke();
           }
         });
@@ -112,6 +111,7 @@ export default function MouseConstellation() {
   return (
     <canvas
       ref={canvasRef}
+      aria-hidden="true"
       style={{
         position: 'fixed',
         top: 0,

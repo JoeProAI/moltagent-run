@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { 
-  ShieldCheck, 
-  Lock, 
-  Key, 
-  Database, 
-  Activity, 
-  Hash, 
-  Eye, 
+import {
+  Lock,
+  Key,
+  Database,
+  Activity,
+  Hash,
+  Eye,
   ShieldAlert
 } from 'lucide-react';
 
@@ -55,105 +54,84 @@ export default function CarapaceFirewall() {
     setLedgerLogs(prev => [newLog, ...prev]);
   };
 
+  const planes = [
+    { num: 'P1', plane: 'Ingress', status: 'Quarantine active', desc: 'Every input gets a provenance tag and a detector score before it touches memory.', icon: <Eye size={15} /> },
+    { num: 'P2', plane: 'Recall', status: 'Trust-aware search', desc: 'Quarantined inputs are suppressed from prompts during memory recall.', icon: <Database size={15} /> },
+    { num: 'P3', plane: 'Promotion', status: 'Gatekeeper active', desc: 'Strict trust floor: untrusted (T4) content can never be promoted to core memory.', icon: <Lock size={15} /> },
+    { num: 'P4', plane: 'Soul', status: 'Ed25519 signed', desc: 'Protected identity files require a cryptographic capability token to modify.', icon: <Key size={15} /> },
+    { num: 'P5', plane: 'Egress', status: 'Exfil scanner on', desc: 'Outbound content is scanned for secrets before it leaves the swarm.', icon: <ShieldAlert size={15} /> }
+  ];
+
+  const statusTone = (status) => {
+    if (status === 'REJECTED') return 'danger';
+    if (status === 'ALLOWED' || status === 'VERIFIED' || status === 'PASSED') return 'ok';
+    return '';
+  };
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', height: '100%', overflowY: 'auto' }}>
-      
-      {/* Sleek Banner Header */}
-      <div style={{
-        background: 'var(--bg-surface-elevated)',
-        border: '1px solid var(--border-subtle)',
-        borderRadius: '8px',
-        padding: '16px 20px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '12px'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <div style={{
-            background: 'rgba(255,255,255,0.05)',
-            border: '1px solid #1F222E',
-            borderRadius: '6px',
-            padding: '8px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
-            <ShieldCheck size={20} color="#FFF" />
-          </div>
-          <div>
-            <div style={{ fontSize: '1rem', fontWeight: '700', color: '#FFF', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              CARAPAX MEMORY-INTEGRITY FIREWALL
-              <span style={{ fontSize: '0.62rem', background: '#1F222E', color: '#FFF', fontWeight: '600', padding: '2px 8px', borderRadius: '4px', border: '1px solid #334155' }}>
-                PROTECTION ACTIVE
-              </span>
-            </div>
-            <p style={{ fontSize: '0.72rem', color: '#94A3B8', marginTop: '2px', fontFamily: 'var(--font-mono)' }}>
-              5-Plane Memory Security • Ed25519 Cryptographic Tokens • Hash-Chained Ledger
-            </p>
+    <div className="module">
+
+      <div className="masthead">
+        <div>
+          <div className="masthead-eyebrow">S2 · Carapax firewall</div>
+          <h2 className="masthead-title">The shell around your agents' memory</h2>
+          <p className="masthead-sub">
+            Five defensive planes keep untrusted input out of agent memory, and an immutable
+            hash-chained ledger records every allow and reject decision.
+          </p>
+        </div>
+        <div className="masthead-actions">
+          <span className="badge ok">Protection active</span>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+            <button type="button" className="btn primary" onClick={handleRunSecurityCheck}>
+              <Activity size={14} />
+              Run integrity audit
+            </button>
+            <span className="btn-hint">Appends a signed block to the ledger below</span>
           </div>
         </div>
-
-        <button
-          onClick={handleRunSecurityCheck}
-          className="button button-primary"
-          style={{ padding: '8px 16px', fontSize: '0.75rem' }}
-        >
-          <Activity size={14} />
-          EXECUTE INTEGRITY AUDIT
-        </button>
       </div>
 
-      {/* 5-Plane Security Matrix Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
-        {[
-          { plane: '1. INGRESS PLANE', status: 'Quarantine Active', desc: 'Provenance tagging & detector scoring', icon: <Eye size={16} color="#94A3B8" /> },
-          { plane: '2. RECALL PLANE', status: 'Trust-Aware Search', desc: 'Quarantined inputs suppressed from prompt', icon: <Database size={16} color="#94A3B8" /> },
-          { plane: '3. PROMOTION PLANE', status: 'Gatekeeper Active', desc: 'Strict trust floor floor (T4 rejected)', icon: <Lock size={16} color="#94A3B8" /> },
-          { plane: '4. SOUL PLANE', status: 'Ed25519 Signed', desc: 'Protected file cryptographic capability', icon: <Key size={16} color="#94A3B8" /> },
-          { plane: '5. EGRESS PLANE', status: 'Exfil Scanner On', desc: 'Secret scan & alignment verification', icon: <ShieldAlert size={16} color="#94A3B8" /> }
-        ].map((item, idx) => (
-          <div key={idx} className="card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-              <span style={{ fontSize: '0.7rem', fontWeight: '700', color: '#FFF', fontFamily: 'var(--font-mono)' }}>{item.plane}</span>
+      {/* 5-Plane Security Matrix */}
+      <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))' }}>
+        {planes.map((item, idx) => (
+          <div key={idx} className="panel">
+            <div className="panel-head" style={{ marginBottom: 'var(--sp-2)' }}>
+              <span className="masthead-eyebrow" style={{ marginBottom: 0 }}>{item.num} · {item.plane}</span>
               {item.icon}
             </div>
-            <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#FFF', marginBottom: '2px' }}>{item.status}</div>
-            <p style={{ fontSize: '0.65rem', color: '#64748B', fontFamily: 'var(--font-mono)' }}>{item.desc}</p>
+            <div className="panel-title" style={{ marginBottom: '4px' }}>{item.status}</div>
+            <p className="panel-sub" style={{ marginBottom: 'var(--sp-3)' }}>{item.desc}</p>
+            <div className="segmeter" aria-hidden="true">
+              {[...Array(5)].map((_, i) => (
+                <span key={i} className={i <= idx ? 'lit' : ''} />
+              ))}
+            </div>
           </div>
         ))}
       </div>
 
       {/* Append-Only Hash-Chained Audit Ledger */}
-      <div className="card" style={{ background: '#090A0E', padding: '16px' }}>
-        <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#FFF', fontFamily: 'var(--font-mono)', marginBottom: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Hash size={16} />
-            APPEND-ONLY HASH-CHAINED AUDIT LEDGER
-          </span>
-          <span style={{ fontSize: '0.62rem', color: '#64748B' }}>IMMUTABLE</span>
+      <div className="panel sunken">
+        <div className="panel-head">
+          <div className="panel-title">
+            <Hash size={15} />
+            Audit ledger — append-only, hash-chained
+          </div>
+          <span className="panel-note">Every decision is recorded. Nothing can be edited or removed.</span>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '280px', overflowY: 'auto' }}>
+        <div className="console">
           {ledgerLogs.map((log) => (
-            <div key={log.id} style={{
-              padding: '8px 12px',
-              borderRadius: '4px',
-              background: 'rgba(255,255,255,0.02)',
-              borderLeft: '3px solid #334155',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '0.72rem',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '2px'
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ color: '#FFF', fontWeight: '700' }}>[{log.plane}] {log.status}</span>
-                <span style={{ color: '#64748B', fontSize: '0.62rem' }}>{log.time} • ID: {log.id}</span>
+            <div key={log.id} className={`log-block ${statusTone(log.status)}`}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 'var(--sp-2)', flexWrap: 'wrap' }}>
+                <span style={{ color: 'var(--bone)', fontWeight: 700 }}>
+                  [{log.plane}] <span style={{ color: log.status === 'REJECTED' ? 'var(--danger)' : 'var(--ok)' }}>{log.status}</span>
+                </span>
+                <span className="log-time">{log.time} · {log.id}</span>
               </div>
-              <div style={{ color: '#CBD5E1' }}>{log.msg}</div>
-              <div style={{ color: '#64748B', fontSize: '0.62rem' }}>Hash: <code style={{ color: '#94A3B8' }}>{log.hash}</code> • Trust: {log.trust}</div>
+              <div className="log-msg">{log.msg}</div>
+              <div className="log-time">hash <code style={{ color: 'var(--bone-2)' }}>{log.hash}</code> · trust {log.trust}</div>
             </div>
           ))}
         </div>

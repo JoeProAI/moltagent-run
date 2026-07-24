@@ -1,23 +1,97 @@
 import React, { useState } from 'react';
-import { 
-  Zap, 
-  Cpu, 
-  Database, 
-  DollarSign, 
-  Play, 
-  RefreshCw, 
-  Brain, 
-  TrendingUp, 
-  CreditCard,
-  ShieldCheck
+import {
+  Zap,
+  Cpu,
+  DollarSign,
+  Play,
+  RefreshCw,
+  Brain,
+  CreditCard
 } from 'lucide-react';
+import { db, doc, collection, getDocs, writeBatch } from '../../firebase';
 
-export default function MechaRun() {
+export default function MechaRun({ firebaseError, setActiveAgents }) {
   const [activeTab, setActiveTab] = useState('mecha-engine');
   const [mechaPrompt, setMechaPrompt] = useState('Audit Android codebase, generate Jetpack Compose design system, and execute 10-agent Codex swarm sweep');
   const [isSwarmRunning, setIsSwarmRunning] = useState(false);
   const [codexCount, setCodexCount] = useState(10);
-  const [selectedPlan, setSelectedPlan] = useState('pro');
+  const [checkoutStatus, setCheckoutStatus] = useState(null);
+
+  // Mirror AgentFactory's swarm persistence: dispatched Codex agents become
+  // live nodes in Firestore (or local state in degraded mode) so the header
+  // count and ambient canvas react to a real dispatch.
+  const spawnMechaAgents = async (count) => {
+    const agents = Array.from({ length: count }).map((_, i) => ({
+      swarmId: 'mecha',
+      type: 'Codex Sandbox',
+      task: `Parallel sweep partition ${i}`,
+      load: Math.floor(Math.random() * 40) + 55 + '%',
+      color: '#E8A832',
+      position: [(Math.random() - 0.5) * 20, (Math.random() - 0.5) * 15, (Math.random() - 0.5) * 15],
+      scale: Math.random() * 0.15 + 0.12,
+      speed: Math.random() * 0.2 + 0.1,
+      speedOffset: Math.random() * Math.PI * 2
+    }));
+
+    if (firebaseError) {
+      setActiveAgents?.(current => [
+        ...current.filter(a => a.swarmId !== 'mecha'),
+        ...agents.map((a, i) => ({ ...a, id: `mecha-node-${i}` }))
+      ]);
+      return;
+    }
+    try {
+      const batch = writeBatch(db);
+      agents.forEach((agent, i) => {
+        batch.set(doc(db, 'activeAgents', `mecha-node-${i}`), agent);
+      });
+      await batch.commit();
+    } catch (e) {
+      console.error('Failed to persist MECHA swarm', e);
+    }
+  };
+
+  const clearMechaAgents = async () => {
+    if (firebaseError) {
+      setActiveAgents?.(current => current.filter(a => a.swarmId !== 'mecha'));
+      return;
+    }
+    try {
+      const batch = writeBatch(db);
+      const snapshot = await getDocs(collection(db, 'activeAgents'));
+      snapshot.forEach(document => {
+        if (document.data().swarmId === 'mecha') {
+          batch.delete(doc(db, 'activeAgents', document.id));
+        }
+      });
+      await batch.commit();
+    } catch (e) {
+      console.error('Failed to clear MECHA swarm', e);
+    }
+  };
+
+  const handleCheckout = async (tierId, tierName) => {
+    setCheckoutStatus({ tier: tierId, state: 'loading' });
+    try {
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tier: tierId })
+      });
+      const result = await response.json();
+      if (result.success && result.url) {
+        window.location.href = result.url;
+        return;
+      }
+      setCheckoutStatus({
+        tier: tierId,
+        state: 'error',
+        message: result.message || `Checkout for ${tierName} isn't live yet.`
+      });
+    } catch (err) {
+      setCheckoutStatus({ tier: tierId, state: 'error', message: `Checkout unreachable: ${err.message}` });
+    }
+  };
 
   const [quadLogs, setQuadLogs] = useState([
     { role: 'PILOT', agent: 'Grok Leader', time: '08:45:01', msg: 'Initiating M.E.C.H.A. 60-agent swarm dispatch.' },
@@ -36,201 +110,179 @@ export default function MechaRun() {
   const handleLaunchMechaSwarm = () => {
     if (isSwarmRunning) return;
     setIsSwarmRunning(true);
+    spawnMechaAgents(codexCount);
 
     const steps = [
       { role: 'PILOT', agent: 'Grok Leader', msg: `Broadcasting task across ${codexCount} Codex cloud sandboxes.` },
       { role: 'HARPER', agent: 'Researcher', msg: 'Querying gBrain Limitless ingest for UI vector embeddings.' },
       { role: 'BENJAMIN', agent: 'Critic & Logic', msg: 'Stress testing memory safety & async coroutine locks.' },
-      { role: 'LUCAS', agent: 'Executor', msg: `Swarm run completed! ${codexCount} parallel tasks synthesized into production build.` }
+      { role: 'LUCAS', agent: 'Executor', msg: `Swarm run completed. ${codexCount} parallel tasks synthesized into production build.` }
     ];
 
     steps.forEach((step, idx) => {
       setTimeout(() => {
         const timeStr = new Date().toLocaleTimeString();
         setQuadLogs(prev => [...prev, { ...step, time: timeStr }]);
-        if (idx === steps.length - 1) setIsSwarmRunning(false);
+        if (idx === steps.length - 1) {
+          setIsSwarmRunning(false);
+          clearMechaAgents();
+        }
       }, (idx + 1) * 800);
     });
   };
 
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', height: '100%', overflowY: 'auto' }}>
-      
-      {/* Top Banner Header */}
-      <div style={{
-        background: 'var(--bg-surface-elevated)',
-        border: '1px solid var(--border-subtle)',
-        borderRadius: '8px',
-        padding: '16px 20px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '12px'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <div style={{
-            background: 'rgba(255,255,255,0.05)',
-            border: '1px solid #1F222E',
-            borderRadius: '6px',
-            padding: '8px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
-            <Zap size={20} color="#FFF" />
-          </div>
-          <div>
-            <div style={{ fontSize: '1rem', fontWeight: '700', color: '#FFF', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              M.E.C.H.A. RUN & gBRAIN ECOSYSTEM
-              <span style={{ fontSize: '0.62rem', background: '#1F222E', color: '#FFF', fontWeight: '600', padding: '2px 8px', borderRadius: '4px', border: '1px solid #334155' }}>
-                MONETIZABLE AI ENGINE
-              </span>
-            </div>
-            <p style={{ fontSize: '0.72rem', color: '#94A3B8', marginTop: '2px', fontFamily: 'var(--font-mono)' }}>
-              Multi-model Cognitive Architecture • Quad Crew Debate • 50-Agent Codex Swarm
-            </p>
-          </div>
-        </div>
+  const crew = [
+    { role: 'PILOT', title: 'Leader & coordinator', desc: 'Synthesizes consensus and delivers the definitive answer.' },
+    { role: 'HARPER', title: 'Researcher & analyst', desc: 'Surfaces facts, context and historical memory data.' },
+    { role: 'BENJAMIN', title: 'Critic & logician', desc: 'Challenges assumptions and stress-tests edge cases.' },
+    { role: 'LUCAS', title: 'Executor & specialist', desc: 'Translates theory into concrete, buildable code.' }
+  ];
 
-        <div style={{ display: 'flex', gap: '4px', background: '#0E0F14', padding: '4px', borderRadius: '6px', border: '1px solid #1F222E' }}>
-          {[
-            { id: 'mecha-engine', label: 'M.E.C.H.A. SWARM', icon: <Zap size={14} /> },
-            { id: 'gbrain-vault', label: 'gBRAIN KNOWLEDGE', icon: <Brain size={14} /> },
-            { id: 'monetization-hub', label: 'SAAS MONETIZATION', icon: <DollarSign size={14} /> }
-          ].map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              style={{
-                background: activeTab === tab.id ? '#1F222E' : 'transparent',
-                color: activeTab === tab.id ? '#FFF' : '#64748B',
-                border: '1px solid transparent',
-                borderRadius: '4px',
-                padding: '6px 12px',
-                fontSize: '0.7rem',
-                fontFamily: 'var(--font-body)',
-                fontWeight: '600',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px'
-              }}
-            >
-              {tab.icon}
-              {tab.label}
-            </button>
-          ))}
+  const tiers = [
+    {
+      id: 'developer',
+      name: 'Developer',
+      price: '$29',
+      period: '/month',
+      desc: 'Solo Android developers and indie hackers',
+      featured: false,
+      features: ['5 concurrent agents', 'Android CLI emulator bridge', 'Jetpack Compose code generator', 'Standard gBrain memory']
+    },
+    {
+      id: 'swarm-pro',
+      name: 'Swarm Pro',
+      price: '$99',
+      period: '/month',
+      desc: 'Mobile dev teams and studios',
+      featured: true,
+      features: ['25 concurrent Codex agents', 'Full M.E.C.H.A. Quad Crew debate', 'Automated ADB journey testing', 'Unlimited gBrain vector ingest']
+    },
+    {
+      id: 'enterprise-swarm',
+      name: 'Enterprise Swarm',
+      price: '$499',
+      period: '/month',
+      desc: 'Enterprise Android engineering teams',
+      featured: false,
+      features: ['50+ parallel cloud sandboxes', 'Custom skill & MCP integrations', 'Dedicated Daytona execution outpost', 'SLA 99.9% + 24/7 agent monitoring']
+    }
+  ];
+
+  return (
+    <div className="module">
+
+      <div className="masthead">
+        <div>
+          <div className="masthead-eyebrow">S3 · M.E.C.H.A. Run</div>
+          <h2 className="masthead-title">Sixty agents, four voices, one answer</h2>
+          <p className="masthead-sub">
+            The Quad Crew debates every task — leader, researcher, critic, executor — then fans it
+            out across up to 50 Codex cloud sandboxes and synthesizes the results.
+          </p>
+        </div>
+        <div className="masthead-actions">
+          <div className="tabset" role="tablist">
+            {[
+              { id: 'mecha-engine', label: 'SWARM ENGINE', icon: <Zap size={13} /> },
+              { id: 'gbrain-vault', label: 'gBRAIN VAULT', icon: <Brain size={13} /> },
+              { id: 'monetization-hub', label: 'SAAS TIERS', icon: <DollarSign size={13} /> }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                type="button"
+                role="tab"
+                aria-selected={activeTab === tab.id}
+                className={`tab ${activeTab === tab.id ? 'active' : ''}`}
+                onClick={() => setActiveTab(tab.id)}
+              >
+                {tab.icon}
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* TAB 1: M.E.C.H.A. SWARM DISPATCHER */}
+      {/* TAB 1: SWARM DISPATCHER */}
       {activeTab === 'mecha-engine' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '16px' }}>
-          
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div className="card">
-              <div style={{ fontSize: '0.8rem', color: '#FFF', fontFamily: 'var(--font-mono)', fontWeight: '700', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Cpu size={16} />
-                M.E.C.H.A. MULTI-MODEL SWARM DISPATCHER
+        <div className="grid cols-main-side">
+
+          <div className="stack">
+            <div className="panel">
+              <div className="panel-head">
+                <div className="panel-title">
+                  <Cpu size={15} />
+                  Swarm dispatcher
+                </div>
+                <span className="panel-note">Quad Crew debate → Codex fan-out</span>
               </div>
 
+              <label className="field-label" htmlFor="mecha-prompt">Task for the swarm</label>
               <textarea
+                id="mecha-prompt"
+                className="textarea"
                 value={mechaPrompt}
                 onChange={(e) => setMechaPrompt(e.target.value)}
                 rows={3}
-                style={{
-                  width: '100%',
-                  background: '#090A0E',
-                  border: '1px solid #1F222E',
-                  borderRadius: '6px',
-                  color: '#FFF',
-                  padding: '12px',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.8rem',
-                  resize: 'none',
-                  outline: 'none',
-                  marginBottom: '14px'
-                }}
               />
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <span style={{ fontSize: '0.72rem', color: '#94A3B8', fontFamily: 'var(--font-mono)' }}>
-                    CODEX SWARM AGENTS: <strong style={{ color: '#FFF' }}>{codexCount}</strong>
-                  </span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--sp-3)', marginTop: 'var(--sp-3)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-3)', flex: 1, minWidth: '220px' }}>
+                  <label htmlFor="codex-count" style={{ fontSize: '0.7rem', color: 'var(--bone-2)', fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>
+                    Codex agents: <strong style={{ color: 'var(--amber)' }}>{codexCount}</strong>
+                  </label>
                   <input
+                    id="codex-count"
                     type="range"
                     min={1}
                     max={50}
                     value={codexCount}
                     onChange={(e) => setCodexCount(Number(e.target.value))}
-                    style={{ accentColor: '#FFF', cursor: 'pointer' }}
+                    style={{ flex: 1 }}
                   />
                 </div>
 
-                <button
-                  onClick={handleLaunchMechaSwarm}
-                  disabled={isSwarmRunning}
-                  className="button button-primary"
-                  style={{
-                    background: isSwarmRunning ? '#1F222E' : '#FFF',
-                    color: isSwarmRunning ? '#94A3B8' : '#000',
-                    fontWeight: '700',
-                    padding: '8px 18px',
-                    fontSize: '0.75rem'
-                  }}
-                >
-                  {isSwarmRunning ? <RefreshCw size={14} className="spin" /> : <Play size={14} />}
-                  {isSwarmRunning ? 'DISPATCHING MECHA...' : 'DISPATCH M.E.C.H.A. SWARM'}
-                </button>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                  <button
+                    type="button"
+                    className="btn primary"
+                    onClick={handleLaunchMechaSwarm}
+                    disabled={isSwarmRunning}
+                  >
+                    {isSwarmRunning ? <RefreshCw size={14} className="spin" /> : <Play size={14} />}
+                    {isSwarmRunning ? 'Dispatching…' : `Dispatch ${codexCount}-agent swarm`}
+                  </button>
+                  <span className="btn-hint">Spawns {codexCount} live nodes in the swarm canvas</span>
+                </div>
               </div>
             </div>
 
-            <div className="card" style={{ flexGrow: 1, background: '#090A0E' }}>
-              <div style={{ fontSize: '0.72rem', color: '#64748B', fontFamily: 'var(--font-mono)', marginBottom: '12px', display: 'flex', justifyContent: 'space-between' }}>
-                <span>QUAD CREW DEBATE & COGNITIVE SYNTHESIS STREAM</span>
-                <span style={{ color: '#94A3B8' }}>PORT 8766 LIVE</span>
+            <div className="panel sunken">
+              <div className="panel-head">
+                <div className="panel-title">Quad Crew debate stream</div>
+                <span className="panel-note">port 8766 · live</span>
               </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '260px', overflowY: 'auto' }}>
+              <div className="console">
                 {quadLogs.map((log, idx) => (
-                  <div key={idx} style={{
-                    padding: '8px 12px',
-                    borderRadius: '4px',
-                    background: 'rgba(255,255,255,0.02)',
-                    borderLeft: '3px solid #334155',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '0.72rem',
-                    display: 'flex',
-                    gap: '10px'
-                  }}>
-                    <span style={{ color: '#64748B', minWidth: '60px' }}>[{log.time}]</span>
-                    <span style={{ color: '#FFF', fontWeight: '700', minWidth: '90px' }}>{log.role}:</span>
-                    <span style={{ color: '#CBD5E1' }}>{log.msg}</span>
+                  <div key={idx} className="log-row">
+                    <span className="log-time">[{log.time}]</span>
+                    <span className="log-agent">{log.role}</span>
+                    <span className="log-msg">{log.msg}</span>
                   </div>
                 ))}
               </div>
             </div>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <div style={{ fontSize: '0.72rem', color: '#64748B', fontFamily: 'var(--font-mono)', fontWeight: '700' }}>
-              QUAD CREW ROLES (GROK)
-            </div>
-
-            {[
-              { role: 'PILOT', title: 'Leader & Coordinator', desc: 'Synthesizes consensus & delivers definitive answers.' },
-              { role: 'HARPER', title: 'Researcher & Analyst', desc: 'Surfaces facts, context & historical memory data.' },
-              { role: 'BENJAMIN', title: 'Critic & Logician', desc: 'Challenges assumptions & stress-tests edge cases.' },
-              { role: 'LUCAS', title: 'Executor & Specialist', desc: 'Translates theory into concrete buildable code.' }
-            ].map((crew, i) => (
-              <div key={i} className="card" style={{ padding: '12px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.8rem', fontWeight: '700', color: '#FFF' }}>{crew.role}</span>
-                  <span style={{ fontSize: '0.6rem', color: '#94A3B8', fontFamily: 'var(--font-mono)' }}>{crew.title}</span>
+          <div className="stack" style={{ gap: 'var(--sp-2)' }}>
+            <span className="field-label">Quad Crew — four Grok voices</span>
+            {crew.map((member, i) => (
+              <div key={i} className="roster-row">
+                <div className="roster-head">
+                  <span className="roster-name">{member.role}</span>
                 </div>
-                <p style={{ fontSize: '0.68rem', color: '#64748B', marginTop: '4px' }}>{crew.desc}</p>
+                <div className="roster-role">{member.title}</div>
+                <p className="roster-desc">{member.desc}</p>
               </div>
             ))}
           </div>
@@ -240,25 +292,26 @@ export default function MechaRun() {
 
       {/* TAB 2: gBRAIN KNOWLEDGE VAULT */}
       {activeTab === 'gbrain-vault' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div style={{ fontSize: '0.8rem', color: '#FFF', fontFamily: 'var(--font-mono)', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Brain size={16} />
-            gBRAIN GROUNDED MEMORY SYSTEM & TRUTH BANK
+        <div className="stack">
+          <div className="panel-head" style={{ marginBottom: 0 }}>
+            <div className="panel-title">
+              <Brain size={15} />
+              gBrain vector vault — the swarm's grounded memory
+            </div>
+            <span className="panel-note">Documents the crew can cite as truth</span>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
+          <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
             {gBrainKnowledge.map((item, index) => (
-              <div key={index} className="card">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '0.85rem', fontWeight: '700', color: '#FFF' }}>{item.title}</span>
-                  <span style={{ fontSize: '0.55rem', background: '#0E0F14', color: '#94A3B8', padding: '2px 6px', borderRadius: '4px', border: '1px solid #1F222E' }}>
-                    {item.status}
-                  </span>
+              <div key={index} className="panel">
+                <div className="panel-head" style={{ marginBottom: 'var(--sp-2)' }}>
+                  <span className="panel-title" style={{ fontSize: '0.8rem' }}>{item.title}</span>
+                  <span className={`badge ${item.status === 'ACTIVE' ? 'hot' : 'ok'}`}>{item.status}</span>
                 </div>
-                <div style={{ fontSize: '0.68rem', color: '#94A3B8', fontFamily: 'var(--font-mono)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <div>Category: <span style={{ color: '#FFF' }}>{item.category}</span></div>
-                  <div>Size: {item.size}</div>
-                  <div>Vector Embeddings: <span style={{ color: '#FFF' }}>{item.vectors}</span></div>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.68rem', color: 'var(--bone-2)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <div>Category · <span style={{ color: 'var(--bone)' }}>{item.category}</span></div>
+                  <div>Size · {item.size}</div>
+                  <div>Vector embeddings · <span style={{ color: 'var(--amber)' }}>{item.vectors}</span></div>
                 </div>
               </div>
             ))}
@@ -266,85 +319,67 @@ export default function MechaRun() {
         </div>
       )}
 
-      {/* TAB 3: SAAS MONETIZATION STRATEGY */}
+      {/* TAB 3: SAAS MONETIZATION */}
       {activeTab === 'monetization-hub' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          
-          <div className="card" style={{ background: '#090A0E', padding: '16px' }}>
-            <div style={{ fontSize: '0.9rem', fontWeight: '700', color: '#FFF', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <TrendingUp size={18} color="#FFF" />
-              ROADMAP TO $10,000/MO MRR — COMMERCIALLY PACKAGED AI AGENT STUDIO
-            </div>
-            <p style={{ fontSize: '0.78rem', color: '#94A3B8' }}>
-              Turn your local Antigravity + M.E.C.H.A. Android Agent Studio into a high-margin commercial SaaS platform. Monetize multi-agent cloud execution, Jetpack Compose UI generation, and ADB testing for mobile dev teams.
+        <div className="stack">
+
+          <div className="panel">
+            <div className="panel-title" style={{ marginBottom: '4px' }}>Roadmap to $10,000/mo MRR</div>
+            <p className="panel-sub" style={{ marginBottom: 0 }}>
+              Package the M.E.C.H.A. Android agent studio as a commercial SaaS: multi-agent cloud
+              execution, Jetpack Compose generation, and ADB testing sold to mobile dev teams.
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
-            {[
-              {
-                name: 'DEVELOPER',
-                price: '$29',
-                period: '/month',
-                desc: 'Solo Android Developers & Indie Hackers',
-                features: ['5 Concurrent Agents', 'Android CLI Emulator Bridge', 'Jetpack Compose Code Generator', 'Standard gBrain Memory']
-              },
-              {
-                name: 'SWARM PRO',
-                price: '$99',
-                period: '/month',
-                desc: 'Mobile Dev Teams & Studios',
-                features: ['25 Concurrent Codex Agents', 'Full M.E.C.H.A. Quad Crew Debate', 'Automated ADB Journey Testing', 'Unlimited gBrain Memory Vector Ingest']
-              },
-              {
-                name: 'ENTERPRISE SWARM',
-                price: '$499',
-                period: '/month',
-                desc: 'Enterprise Android Engineering Teams',
-                features: ['50+ Parallel Cloud Sandboxes', 'Custom Skill & MCP Integrations', 'Dedicated Daytona Execution Outpost', 'SLA 99.9% + 24/7 Agent Monitoring']
-              }
-            ].map((plan, idx) => (
-              <div key={idx} className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <div>
-                  <div style={{ fontSize: '0.75rem', fontWeight: '700', color: '#FFF', letterSpacing: '0.05em' }}>{plan.name}</div>
-                  <div style={{ fontSize: '1.8rem', fontWeight: '700', color: '#FFF', margin: '8px 0 2px' }}>
-                    {plan.price}<span style={{ fontSize: '0.75rem', color: '#64748B' }}>{plan.period}</span>
-                  </div>
-                  <p style={{ fontSize: '0.7rem', color: '#94A3B8', marginBottom: '14px' }}>{plan.desc}</p>
-                  
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '16px' }}>
-                    {plan.features.map((feat, fIdx) => (
-                      <div key={fIdx} style={{ fontSize: '0.7rem', color: '#CBD5E1', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <ShieldCheck size={14} color="#94A3B8" />
-                        {feat}
-                      </div>
-                    ))}
-                  </div>
+          <div className="grid cols-3">
+            {tiers.map((plan, idx) => (
+              <div key={idx} className={`tier ${plan.featured ? 'featured' : ''}`}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span className="tier-name">{plan.name}</span>
+                  {plan.featured && <span className="badge hot">Most popular</span>}
                 </div>
+                <div className="tier-price">{plan.price}<span>{plan.period}</span></div>
+                <p className="tier-audience">{plan.desc}</p>
+
+                <ul className="tier-features">
+                  {plan.features.map((feat, fIdx) => (
+                    <li key={fIdx}>{feat}</li>
+                  ))}
+                </ul>
 
                 <button
-                  onClick={() => {
-                    setSelectedPlan(plan.name.toLowerCase());
-                    alert(`[MoltAgent.run Checkout] Selected ${plan.name} Tier (${plan.price}/mo).\nGenerated Production API Key: molt_live_sk_${Math.random().toString(36).substring(2, 12)}`);
-                  }}
-                  className="button button-primary"
-                  style={{ width: '100%', padding: '10px', fontSize: '0.75rem' }}
+                  type="button"
+                  className={`btn ${plan.featured ? 'primary' : ''}`}
+                  style={{ width: '100%' }}
+                  disabled={checkoutStatus?.tier === plan.id && checkoutStatus.state === 'loading'}
+                  onClick={() => handleCheckout(plan.id, plan.name)}
                 >
-                  START COMMERCIAL TIER
+                  {checkoutStatus?.tier === plan.id && checkoutStatus.state === 'loading'
+                    ? 'Opening checkout…'
+                    : `Start ${plan.name} — ${plan.price}/mo`}
                 </button>
+
+                {checkoutStatus?.tier === plan.id && checkoutStatus.state === 'error' && (
+                  <p style={{ fontSize: '0.65rem', color: 'var(--danger)', fontFamily: 'var(--font-mono)', marginTop: 'var(--sp-2)' }}>
+                    {checkoutStatus.message}
+                  </p>
+                )}
               </div>
             ))}
           </div>
 
-          <div className="card" style={{ background: '#090A0E', padding: '16px' }}>
-            <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#FFF', fontFamily: 'var(--font-mono)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <CreditCard size={16} />
-              PRODUCTION API KEYS & STRIPE BILLING INTEGRATION
+          <div className="panel sunken">
+            <div className="panel-head">
+              <div className="panel-title">
+                <CreditCard size={15} />
+                Billing & API keys
+              </div>
+              <span className="panel-note">Stripe integration</span>
             </div>
-            <div style={{ fontSize: '0.7rem', color: '#94A3B8', fontFamily: 'var(--font-mono)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <div>Domain Target: <span style={{ color: '#FFF', fontWeight: '600' }}>https://moltagent.run</span></div>
-              <div>Secret API Key: <code style={{ color: '#FFF', background: '#1F222E', padding: '2px 6px', borderRadius: '4px' }}>molt_live_sk_948271038a8e1b</code></div>
-              <div>Monthly API Credit Allowance: <span style={{ color: '#FFF' }}>100,000 / 100,000 credits</span></div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.7rem', color: 'var(--bone-2)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <div>Domain target · <span style={{ color: 'var(--bone)' }}>https://moltagent.run</span></div>
+              <div>Secret API key · <code style={{ color: 'var(--amber)', background: 'var(--chitin-2)', padding: '2px 6px' }}>molt_live_sk_948271038a8e1b</code></div>
+              <div>Monthly API credit allowance · <span style={{ color: 'var(--bone)' }}>100,000 / 100,000 credits</span></div>
             </div>
           </div>
 

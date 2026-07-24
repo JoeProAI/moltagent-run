@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layers, Server, Shield, Zap, Loader, Terminal } from 'lucide-react';
+import { Server, Shield, Zap, Loader, Terminal } from 'lucide-react';
 import { db, doc, setDoc } from '../../firebase';
 
 export default function NOESISBridge({ isSynced, setIsSynced, daytonaCredits, setDaytonaCredits, firebaseError }) {
@@ -19,14 +19,14 @@ export default function NOESISBridge({ isSynced, setIsSynced, daytonaCredits, se
       setActiveWorkspace(false);
       return;
     }
-    
+
     setIsSpinning(true);
-    
+
     if (firebaseError) {
       setTimeout(() => {
         setIsSpinning(false);
         setActiveWorkspace(true);
-        setDaytonaCredits(prev => Math.max(0, prev - 120)); 
+        setDaytonaCredits(prev => Math.max(0, prev - 120));
       }, 2000);
       return;
     }
@@ -46,70 +46,101 @@ export default function NOESISBridge({ isSynced, setIsSynced, daytonaCredits, se
   };
 
   return (
-    <div className="glass-panel" style={{ padding: '32px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-      <div className="widget-header">
-        <h2 className="widget-title">
-          <Layers size={20} color="#D4AF37" />
-          HYBRID BRIDGE
-        </h2>
+    <div className="module">
+
+      <div className="masthead">
+        <div>
+          <div className="masthead-eyebrow">S6 · Hybrid bridge</div>
+          <h2 className="masthead-title">Route work between your RTX 5080 and the cloud</h2>
+          <p className="masthead-sub">
+            Heavy rendering goes to Google Cloud, dev builds go to Daytona workspaces, and
+            cinematic polish comes back to local NOESIS on your own GPU.
+          </p>
+        </div>
+        <div className="masthead-actions">
+          <span className={`badge ${isSynced ? 'ok' : ''}`}>{isSynced ? 'NOESIS synced' : 'NOESIS not synced'}</span>
+        </div>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-        <div className="agent-card">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <Server size={20} color={isSynced ? "#D4AF37" : "var(--text-muted)"} />
-            <div>
-              <h4 style={{ margin: 0, fontSize: '0.9rem', fontWeight: '400', letterSpacing: '0.05em' }}>LOCAL NOESIS</h4>
-              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'JetBrains Mono' }}>RTX 5080 • Bidirectional</div>
+      <div className="grid cols-3">
+
+        <div className="panel" style={isSynced ? { borderColor: 'var(--amber)' } : undefined}>
+          <div className="panel-head">
+            <div className="panel-title">
+              <Server size={15} />
+              Local NOESIS
             </div>
+            <span className={`badge ${isSynced ? 'ok' : ''}`}>{isSynced ? 'Synced' : 'Offline'}</span>
           </div>
-          <button 
-            className={`glass-button ${isSynced ? 'primary' : ''}`} 
-            style={{ padding: '8px 16px' }}
+          <p className="panel-sub">
+            Bidirectional memory sync between this workbench and the NOESIS engine on your RTX 5080.
+          </p>
+          <button
+            type="button"
+            className={`btn ${isSynced ? '' : 'primary'}`}
+            style={{ width: '100%' }}
             onClick={handleSync}
           >
-            {isSynced ? 'SYNCED' : 'SYNC DB'}
+            {isSynced ? 'Disconnect sync' : 'Sync with local GPU'}
           </button>
         </div>
 
-        <div className="agent-card">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <Zap size={20} color="var(--text-muted)" />
-            <div>
-              <h4 style={{ margin: 0, fontSize: '0.9rem', fontWeight: '400', letterSpacing: '0.05em' }}>OPENCLAW</h4>
-              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'JetBrains Mono' }}>Agents imported: 4</div>
+        <div className="panel">
+          <div className="panel-head">
+            <div className="panel-title">
+              <Zap size={15} />
+              OpenClaw
             </div>
+            <span className="badge">4 agents imported</span>
           </div>
-          <button className="glass-button" style={{ padding: '8px 16px' }}>UPGRADE</button>
+          <p className="panel-sub">
+            Import agents from your OpenClaw platform and run them inside the MoltAgent swarm.
+          </p>
+          <button type="button" className="btn" style={{ width: '100%' }}>
+            Import more agents
+          </button>
         </div>
 
-        <div className="agent-card" style={{ borderBottomColor: activeWorkspace ? '#D4AF37' : 'var(--border-glass)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <Shield size={20} color={activeWorkspace ? "#D4AF37" : "var(--text-muted)"} />
-            <div>
-              <h4 style={{ margin: 0, fontSize: '0.9rem', fontWeight: '400', letterSpacing: '0.05em' }}>DAYTONA.IO</h4>
-              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'JetBrains Mono' }}>
-                {activeWorkspace ? 'Workspace Active • AETHER Build' : `Dev Environments • $${daytonaCredits.toLocaleString()}`}
-              </div>
+        <div className="panel" style={activeWorkspace ? { borderColor: 'var(--amber)' } : undefined}>
+          <div className="panel-head">
+            <div className="panel-title">
+              <Shield size={15} />
+              Daytona.io
             </div>
+            <span className={`badge ${activeWorkspace ? 'hot' : ''}`}>
+              {activeWorkspace ? 'Workspace active' : `${daytonaCredits.toLocaleString()} credits`}
+            </span>
           </div>
-          <button 
-            className={`glass-button ${activeWorkspace ? 'primary' : ''}`} 
-            style={{ padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '8px' }}
+          <p className="panel-sub">
+            {activeWorkspace
+              ? 'AETHER build running in a cloud dev workspace. Costs 120 credits per build.'
+              : 'Spin up a cloud dev workspace for the next build. Costs 120 credits per build.'}
+          </p>
+          <button
+            type="button"
+            className={`btn ${activeWorkspace ? '' : 'primary'}`}
+            style={{ width: '100%' }}
             onClick={handleWorkspace}
             disabled={isSpinning}
           >
-            {isSpinning ? <Loader size={14} className="floating" /> : activeWorkspace ? <><Terminal size={14} /> ACTIVE</> : 'START BUILD'}
+            {isSpinning ? <Loader size={14} className="spin" /> : activeWorkspace ? <Terminal size={14} /> : null}
+            {isSpinning ? 'Starting workspace…' : activeWorkspace ? 'Stop workspace' : 'Start cloud build'}
           </button>
         </div>
+
       </div>
-      
-      <div style={{ marginTop: '32px', padding: '20px', border: '1px solid var(--border-glass)', background: 'transparent' }}>
-        <h4 style={{ margin: 0, marginBottom: '12px', fontSize: '0.8rem', fontWeight: '500', letterSpacing: '0.1em', color: 'var(--accent-gold)' }}>ROUTING INTEL</h4>
-        <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'JetBrains Mono', lineHeight: '1.6' }}>
-          "Defy Gravity" mode active. Heavy rendering routed to Google Cloud. Daytona workspaces handle active dev builds. Cinematic polish pulled back to local NOESIS.
+
+      <div className="panel sunken">
+        <div className="panel-head">
+          <div className="panel-title">Routing intel</div>
+          <span className="panel-note">Defy Gravity mode active</span>
+        </div>
+        <p style={{ fontSize: '0.75rem', color: 'var(--bone-2)', fontFamily: 'var(--font-mono)', lineHeight: 1.7, margin: 0 }}>
+          Heavy rendering routed to Google Cloud. Daytona workspaces handle active dev builds.
+          Cinematic polish pulled back to local NOESIS.
         </p>
       </div>
+
     </div>
   );
 }

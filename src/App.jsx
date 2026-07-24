@@ -9,11 +9,11 @@ import MechaRun from './components/widgets/MechaRun';
 import AgentFactory from './components/widgets/AgentFactory';
 import XGrowth from './components/widgets/XGrowth';
 import NOESISBridge from './components/widgets/NOESISBridge';
-import { db, collection, onSnapshot, doc, getDoc, setDoc } from './firebase';
+import { db, collection, onSnapshot, doc, setDoc } from './firebase';
 
 function App() {
   const [activeWidget, setActiveWidget] = useState('android-studio');
-  const [constellation, setConstellation] = useState('android-party'); 
+  const [constellation, setConstellation] = useState('android-party');
   const [activeAgents, setActiveAgents] = useState([]);
   const [daytonaCredits, setDaytonaCredits] = useState(19842);
   const [isSynced, setIsSynced] = useState(false);
@@ -66,57 +66,51 @@ function App() {
   }, [activeWidget]);
 
   return (
-    <div className="app-container">
+    <div className="app-shell">
       <MouseConstellation />
-      <Canvas3D constellationMode={constellation} activeAgents={activeAgents} />
-      
+
       {firebaseError && (
-        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', background: 'rgba(255,0,0,0.8)', color: 'white', textAlign: 'center', padding: '8px', zIndex: 100, fontSize: '0.8rem', fontFamily: 'JetBrains Mono' }}>
-          CRITICAL: Firebase Config Missing. Update src/firebase.js with actual keys. Running in degraded simulation mode.
+        <div className="system-warning">
+          Firebase config missing. Add real keys to src/firebase.js — running in degraded simulation mode.
         </div>
       )}
 
-      <Sidebar 
-        activeWidget={activeWidget} 
-        setActiveWidget={setActiveWidget} 
+      <TopBar daytonaCredits={daytonaCredits} activeNodes={activeAgents.length} />
+
+      <Sidebar
+        activeWidget={activeWidget}
+        setActiveWidget={setActiveWidget}
         setConstellation={setConstellation}
-        isSynced={isSynced}
       />
-      
-      <div className="main-content">
-        <TopBar daytonaCredits={daytonaCredits} activeNodes={activeAgents.length} />
-        
-        <div className="widgets-container">
-          {/* Widgets Render Workspace */}
-          {activeWidget === 'android-studio' && (
-            <AndroidStudio setActiveAgents={setActiveAgents} activeAgents={activeAgents} firebaseError={firebaseError} />
-          )}
-          {activeWidget === 'x-growth' && (
-            <XGrowth setActiveAgents={setActiveAgents} firebaseError={firebaseError} />
-          )}
-          {activeWidget === 'carapace-firewall' && (
-            <CarapaceFirewall />
-          )}
-          {activeWidget === 'mecha-run' && (
-            <MechaRun firebaseError={firebaseError} />
-          )}
-          {activeWidget === 'factory' && (
-            <AgentFactory setActiveAgents={setActiveAgents} activeAgents={activeAgents} firebaseError={firebaseError} />
-          )}
-          {activeWidget === 'x-growth' && (
-            <XGrowth setActiveAgents={setActiveAgents} firebaseError={firebaseError} />
-          )}
-          {activeWidget === 'bridge' && (
-            <NOESISBridge 
-              isSynced={isSynced} 
-              setIsSynced={setIsSynced} 
-              daytonaCredits={daytonaCredits}
-              setDaytonaCredits={setDaytonaCredits}
-              firebaseError={firebaseError}
-            />
-          )}
-        </div>
-      </div>
+
+      <main className="workspace">
+        <Canvas3D constellationMode={constellation} activeAgents={activeAgents} />
+
+        {activeWidget === 'android-studio' && (
+          <AndroidStudio setActiveAgents={setActiveAgents} activeAgents={activeAgents} firebaseError={firebaseError} />
+        )}
+        {activeWidget === 'x-growth' && (
+          <XGrowth setActiveAgents={setActiveAgents} firebaseError={firebaseError} />
+        )}
+        {activeWidget === 'carapace-firewall' && (
+          <CarapaceFirewall />
+        )}
+        {activeWidget === 'mecha-run' && (
+          <MechaRun firebaseError={firebaseError} setActiveAgents={setActiveAgents} />
+        )}
+        {activeWidget === 'factory' && (
+          <AgentFactory setActiveAgents={setActiveAgents} activeAgents={activeAgents} firebaseError={firebaseError} />
+        )}
+        {activeWidget === 'bridge' && (
+          <NOESISBridge
+            isSynced={isSynced}
+            setIsSynced={setIsSynced}
+            daytonaCredits={daytonaCredits}
+            setDaytonaCredits={setDaytonaCredits}
+            firebaseError={firebaseError}
+          />
+        )}
+      </main>
     </div>
   );
 }
