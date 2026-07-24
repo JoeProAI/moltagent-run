@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>MoltAgent OG Square</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1200px;
+    height: 1200px;
+    background: #0B0906;
+    overflow: hidden;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    position: relative;
+    color: #EFE7D6;
+  }
+  .frame {
+    position: absolute;
+    inset: 32px;
+    border: 1px solid #2C2416;
+    clip-path: polygon(0 0, calc(100% - 36px) 0, 100% 36px, 100% 100%, 0 100%);
+    background: #14100A;
+  }
+  .inner {
+    position: absolute;
+    inset: 32px;
+    padding: 96px 88px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .segrow { display: flex; gap: 8px; width: 380px; }
+  .segrow span {
+    height: 16px; flex: 1;
+    background: #262013;
+    clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+  }
+  .segrow span.lit { background: #E8A832; }
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #E8A832;
+    margin-top: 40px;
+  }
+  h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 132px;
+    letter-spacing: -0.01em;
+    line-height: 0.98;
+    margin-top: 22px;
+    color: #EFE7D6;
+  }
+  h1 em { font-style: normal; color: #E8A832; }
+  h1 .dom { color: #837863; font-size: 96px; }
+  .sub {
+    font-size: 34px;
+    color: #B0A488;
+    margin-top: 40px;
+    max-width: 920px;
+    line-height: 1.5;
+  }
+  .stack { display: flex; flex-direction: column; gap: 20px; margin-top: 30px; }
+  .mod {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border: 1px solid #2C2416;
+    background: #0B0906;
+    clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%);
+    padding: 22px 28px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 27px;
+    letter-spacing: 0.03em;
+    color: #EFE7D6;
+  }
+  .mod b {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    font-size: 20px;
+    color: #E8A832;
+  }
+  .mod span { color: #837863; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 400; font-size: 22px; margin-left: auto; }
+  .footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid #2C2416;
+    padding-top: 40px;
+  }
+  .domain {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 26px;
+    letter-spacing: 0.08em;
+    color: #837863;
+  }
+  .handle {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 26px;
+    color: #B0A488;
+  }
+  .sigil {
+    width: 58px; height: 58px;
+    background: rgba(232,168,50,0.12);
+    border: 2px solid #E8A832;
+    clip-path: polygon(0 0, calc(100% - 13px) 0, 100% 13px, 100% 100%, 0 100%);
+    display: grid; place-items: center;
+    color: #E8A832;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 21px;
+  }
+</style>
+</head>
+<body>
+  <div class="frame"></div>
+  <div class="inner">
+    <div>
+      <div class="segrow">
+        <span class="lit"></span><span class="lit"></span><span class="lit"></span><span class="lit"></span><span></span><span></span>
+      </div>
+      <div class="eyebrow">Multi-agent swarm workbench</div>
+      <h1>MOLT<em>AGENT</em><span class="dom">.RUN</span></h1>
+      <p class="sub">Orchestrate 60-agent coding swarms, armor their memory, grow your reach.</p>
+      <div class="stack">
+        <div class="mod"><b>S1</b>ANDROID SWARM<span>5-agent parallel build crew</span></div>
+        <div class="mod"><b>S2</b>CARAPAX FIREWALL<span>5-plane memory integrity</span></div>
+        <div class="mod"><b>S3</b>M.E.C.H.A. RUN<span>60-agent orchestrator</span></div>
+        <div class="mod"><b>S5</b>X MULTIPLIER<span>@JoePro growth studio</span></div>
+      </div>
+    </div>
+    <div class="footer">
+      <div class="domain">https://moltagent.run</div>
+      <div class="handle">
+        <div class="sigil">JP</div>
+        @JoePro
+      </div>
+    </div>
+  </div>
+</body>
+</html>

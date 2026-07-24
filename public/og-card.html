@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>MoltAgent OG Card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1200px;
+    height: 630px;
+    background: #0B0906;
+    overflow: hidden;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    position: relative;
+    color: #EFE7D6;
+  }
+  .frame {
+    position: absolute;
+    inset: 24px;
+    border: 1px solid #2C2416;
+    clip-path: polygon(0 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 0 100%);
+    background: #14100A;
+  }
+  .inner {
+    position: absolute;
+    inset: 24px;
+    padding: 64px 72px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .segrow { display: flex; gap: 6px; width: 300px; }
+  .segrow span {
+    height: 12px; flex: 1;
+    background: #262013;
+    clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);
+  }
+  .segrow span.lit { background: #E8A832; }
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 17px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #E8A832;
+    margin-top: 26px;
+  }
+  h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 108px;
+    letter-spacing: -0.01em;
+    line-height: 1;
+    margin-top: 14px;
+    color: #EFE7D6;
+  }
+  h1 em { font-style: normal; color: #E8A832; }
+  h1 .dom { color: #837863; font-size: 84px; }
+  .sub {
+    font-size: 27px;
+    color: #B0A488;
+    margin-top: 26px;
+    max-width: 900px;
+    line-height: 1.45;
+  }
+  .footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid #2C2416;
+    padding-top: 28px;
+  }
+  .modules {
+    display: flex;
+    gap: 28px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    letter-spacing: 0.06em;
+    color: #837863;
+  }
+  .modules b { color: #E8A832; font-weight: 500; margin-right: 8px; }
+  .handle {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    color: #B0A488;
+  }
+  .sigil {
+    width: 44px; height: 44px;
+    background: rgba(232,168,50,0.12);
+    border: 1.5px solid #E8A832;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+    display: grid; place-items: center;
+    color: #E8A832;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+  }
+</style>
+</head>
+<body>
+  <div class="frame"></div>
+  <div class="inner">
+    <div>
+      <div class="segrow">
+        <span class="lit"></span><span class="lit"></span><span class="lit"></span><span class="lit"></span><span></span><span></span>
+      </div>
+      <div class="eyebrow">Multi-agent swarm workbench</div>
+      <h1>MOLT<em>AGENT</em><span class="dom">.RUN</span></h1>
+      <p class="sub">Orchestrate 60-agent coding swarms, armor their memory with the Carapax firewall, and grow @JoePro with parallel A/B hook testing.</p>
+    </div>
+    <div class="footer">
+      <div class="modules">
+        <span><b>S1</b>ANDROID SWARM</span>
+        <span><b>S2</b>CARAPAX</span>
+        <span><b>S3</b>M.E.C.H.A.</span>
+        <span><b>S5</b>X MULTIPLIER</span>
+      </div>
+      <div class="handle">
+        <div class="sigil">JP</div>
+        @JoePro
+      </div>
+    </div>
+  </div>
+</body>
+</html>
