@@ -1,7 +1,8 @@
 const admin = require('firebase-admin');
 const serviceAccount = require('./service-account.json');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-const axios = require('axios');
+
+/* eslint-disable no-unused-vars */
 
 // Initialize Firebase Admin (AETHER Orchestration State)
 admin.initializeApp({
@@ -23,7 +24,7 @@ console.log("==========================================");
  * ==========================================
  * AETHER -> NOESIS BRIDGE CONTRACTS
  * ==========================================
- * These functions define the exact API surface AETHER uses 
+ * These functions define the exact API surface AETHER uses
  * to hand off execution and sovereign retrieval to local NOESIS.
  */
 const NOESIS_URL = 'http://localhost:8080'; // Local Rust Bridge
@@ -35,7 +36,9 @@ const NOESISBridge = {
       console.log("[BRIDGE] Checking NOESIS health...");
       // return await axios.get(`${NOESIS_URL}/bridge/health`);
       return { status: "ALIVE" };
-    } catch (e) { console.error("NOESIS Unreachable"); }
+    } catch (_e) {
+      console.error("NOESIS Unreachable");
+    }
   },
 
   // 2. runtime status: Fetch NOESIS compute load and Convex sync status
@@ -44,7 +47,9 @@ const NOESISBridge = {
       console.log("[BRIDGE] Fetching NOESIS runtime status...");
       // return await axios.get(`${NOESIS_URL}/bridge/runtime-status`);
       return { load: '12%', convex_synced: true };
-    } catch (e) {}
+    } catch (_e) {
+      // NOESIS unreachable — run without local polish
+    }
   },
 
   // 3. startup context: AETHER queries OpenClaw (via NOESIS) for canonical truth
@@ -53,7 +58,9 @@ const NOESISBridge = {
       console.log("[BRIDGE] Pulling read-first memory truth from OpenClaw Brain...");
       // return await axios.get(`${NOESIS_URL}/bridge/startup-context`);
       return { recent_projects: ['joepro-systems/aether'] };
-    } catch (e) {}
+    } catch (_e) {
+      // NOESIS unreachable — continue without startup context
+    }
   },
 
   // 4. search: Offload sovereign retrieval to NOESIS to scan local OpenClaw memory
@@ -62,50 +69,58 @@ const NOESISBridge = {
       console.log(`[BRIDGE] Delegating sovereign search to NOESIS: "${query}"`);
       // return await axios.post(`${NOESIS_URL}/bridge/search`, { query });
       return { results: [] };
-    } catch (e) {}
+    } catch (_e) {
+      // NOESIS unreachable — return empty results
+    }
   },
 
   // 5. local polish: Hand off a completed cloud swarm task to NOESIS for zero-latency cinematic rendering
-  requestLocalPolish: async (taskPayload) => {
+  requestLocalPolish: async (_taskPayload) => {
     try {
       console.log("[BRIDGE] Routing heavy cloud output down to NOESIS for final polish...");
       // return await axios.post(`${NOESIS_URL}/bridge/local-polish`, { payload: taskPayload });
       return { status: "POLISHING_LOCALLY" };
-    } catch (e) {}
+    } catch (_e) {
+      // NOESIS unreachable — skip local polish
+    }
   },
 
   // 6. session summary writeback: AETHER sends final payload to NOESIS to write into OpenClaw Brain
-  writebackSessionMemory: async (summaryData) => {
+  writebackSessionMemory: async (_summaryData) => {
     try {
       console.log("[BRIDGE] Session complete. Passing summary to NOESIS to persist in OpenClaw memory.");
       // return await axios.post(`${NOESIS_URL}/bridge/session-summary-writeback`, { summary: summaryData });
       return { status: "COMMITTED_TO_TRUTH" };
-    } catch (e) {}
+    } catch (_e) {
+      // NOESIS unreachable — summary writeback deferred
+    }
   }
 };
 
+// Silence unused-var warning — NOESIS_URL is referenced in commented-out API calls above
+void NOESIS_URL;
 
 // Watch for active agents to be added to Firestore Orchestration State
 db.collection('activeAgents').onSnapshot(snapshot => {
   snapshot.docChanges().forEach(change => {
     if (change.type === 'added') {
       const agent = change.doc.data();
-      
+
       console.log(`[ORCHESTRATOR] New cloud agent node detected: ${change.doc.id}`);
 
       // If it's the X Growth swarm, let's actually execute the debate logic
       if (agent.swarmId === 'xgrowth' && !agent.processed) {
-        processXGrowthAgent(change.doc.id, agent);
+        processXGrowthAgent(change.doc.id);
       }
     }
   });
 });
 
-async function processXGrowthAgent(agentId, agent) {
+async function processXGrowthAgent(agentId) {
   console.log(`[X-API] Agent ${agentId} connecting to X...`);
-  
+
   let debateResult = "Variant debated successfully.";
-  
+
   if (genAI) {
     try {
       const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
@@ -127,9 +142,9 @@ async function processXGrowthAgent(agentId, agent) {
     result: debateResult,
     status: 'COMPLETED'
   });
-  
+
   console.log(`[ORCHESTRATOR] Cloud Agent ${agentId} completed task.`);
-  
+
   // Example of delegating final local polish to NOESIS:
   await NOESISBridge.requestLocalPolish({ agentId, finalOutput: debateResult });
 }
@@ -147,3 +162,5 @@ db.collection('system').doc('core').onSnapshot(async (doc) => {
     }
   }
 });
+
+/* eslint-enable no-unused-vars */

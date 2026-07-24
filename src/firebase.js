@@ -1,7 +1,23 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, addDoc, getDocs, getDoc, onSnapshot, query, deleteDoc, doc, setDoc, writeBatch } from 'firebase/firestore';
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  getDoc,
+  onSnapshot,
+  query,
+  where,
+  deleteDoc,
+  doc,
+  setDoc,
+  writeBatch
+} from 'firebase/firestore';
+import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 
-// AETHER Firebase Configuration
+// Public web config — safe to ship. Access control lives in Firestore rules
+// (see firestore.rules): reads and writes require an authenticated session,
+// and every swarm document is scoped to its owner's uid.
 const firebaseConfig = {
   apiKey: "AIzaSyCmh0BfMmvRaGaWeD0RX3xBX5ifbjIzJMY",
   authDomain: "noesis-and-aether.firebaseapp.com",
@@ -13,5 +29,22 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
-export { db, collection, addDoc, getDocs, getDoc, onSnapshot, query, deleteDoc, doc, setDoc, writeBatch };
+export {
+  db,
+  auth,
+  signInAnonymously,
+  onAuthStateChanged,
+  collection,
+  addDoc,
+  getDocs,
+  getDoc,
+  onSnapshot,
+  query,
+  where,
+  deleteDoc,
+  doc,
+  setDoc,
+  writeBatch
+};

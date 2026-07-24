@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function TopBar({ daytonaCredits, activeNodes }) {
   const isLocalHost = typeof window !== 'undefined' && (
     window.location.hostname === 'localhost' ||

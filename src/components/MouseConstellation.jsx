@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 // Teneral constellation: amber and ice particles that drift and gather
 // toward the cursor. Disabled entirely under prefers-reduced-motion.

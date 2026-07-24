@@ -1,84 +1,80 @@
-import React, { useState, useEffect } from 'react';
-import { Play, Square, Network, Loader } from 'lucide-react';
-import { db, doc, collection, getDocs, writeBatch } from '../../firebase';
+import { useState, useEffect } from 'react';
+import { Play, Square } from 'lucide-react';
+import { db, doc, collection, query, where, getDocs, writeBatch } from '../../firebase';
 
-export default function AgentFactory({ activeAgents, firebaseError, setActiveAgents }) {
+export default function AgentFactory({ activeAgents, cloudSync, sessionId, setActiveAgents }) {
   const [runningSwarms, setRunningSwarms] = useState({
     video: false,
     research: false,
     core: false
   });
 
-  // Sync local button state with DB
+  // Firestore snapshot (already scoped to this session) is the source of truth
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
     setRunningSwarms({
       video: activeAgents.some(a => a.swarmId === 'video'),
       research: activeAgents.some(a => a.swarmId === 'research'),
       core: activeAgents.some(a => a.swarmId === 'core'),
     });
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [activeAgents]);
+
+  const buildNode = (id, i, swarmType, taskPrefix) => ({
+    owner: sessionId,
+    swarmId: id,
+    type: swarmType,
+    task: `${taskPrefix} partition ${i}`,
+    load: Math.floor(Math.random() * 40) + 10 + '%',
+    color: id === 'core' ? '#E8A832' : '#EDF1FC',
+    position: [(Math.random() - 0.5) * 20, (Math.random() - 0.5) * 15, (Math.random() - 0.5) * 15],
+    scale: Math.random() * 0.15 + 0.1,
+    speed: Math.random() * 0.2 + 0.1,
+    speedOffset: Math.random() * Math.PI * 2,
+  });
 
   const toggleSwarm = async (id, count, swarmType, taskPrefix) => {
     const isCurrentlyRunning = runningSwarms[id];
 
-    // Optimistic / Fallback UI update
+    // Optimistic UI update
     setRunningSwarms(prev => ({ ...prev, [id]: !isCurrentlyRunning }));
 
-    if (firebaseError) {
-      // Degraded simulation mode
+    if (!cloudSync) {
+      // Browser-local sandbox
       if (isCurrentlyRunning) {
         setActiveAgents(current => current.filter(agent => agent.swarmId !== id));
       } else {
         const newAgents = Array.from({ length: count }).map((_, i) => ({
-          id: `${id}-node-${i}`,
-          swarmId: id,
-          type: swarmType,
-          task: `${taskPrefix} partition ${i}`,
-          load: Math.floor(Math.random() * 40) + 10 + '%',
-          color: id === 'core' ? '#E8A832' : '#EDF1FC',
-          position: [(Math.random() - 0.5) * 20, (Math.random() - 0.5) * 15, (Math.random() - 0.5) * 15],
-          scale: Math.random() * 0.15 + 0.1,
-          speed: Math.random() * 0.2 + 0.1,
-          speedOffset: Math.random() * Math.PI * 2,
+          ...buildNode(id, i, swarmType, taskPrefix),
+          id: `${id}-node-${i}`
         }));
         setActiveAgents(current => [...current, ...newAgents]);
       }
       return;
     }
 
-    // Real Firebase Logic
+    // Cloud sync — every doc is owner-scoped and id-prefixed so sessions never collide
     try {
       const batch = writeBatch(db);
 
       if (isCurrentlyRunning) {
-        // Destroy swarm
-        const querySnapshot = await getDocs(collection(db, "activeAgents"));
-        querySnapshot.forEach((document) => {
+        // Destroy only this session's nodes for this swarm
+        const ownScope = query(collection(db, 'activeAgents'), where('owner', '==', sessionId));
+        const snapshot = await getDocs(ownScope);
+        snapshot.forEach((document) => {
           if (document.data().swarmId === id) {
-            batch.delete(doc(db, "activeAgents", document.id));
+            batch.delete(doc(db, 'activeAgents', document.id));
           }
         });
       } else {
-        // Generate and push swarm to DB
         for (let i = 0; i < count; i++) {
-          const agentId = `${id}-node-${i}`;
-          const agentRef = doc(db, "activeAgents", agentId);
-          batch.set(agentRef, {
-            swarmId: id,
-            type: swarmType,
-            task: `${taskPrefix} partition ${i}`,
-            load: Math.floor(Math.random() * 40) + 10 + '%',
-            color: id === 'core' ? '#E8A832' : '#EDF1FC',
-            position: [(Math.random() - 0.5) * 20, (Math.random() - 0.5) * 15, (Math.random() - 0.5) * 15],
-            scale: Math.random() * 0.15 + 0.1,
-            speed: Math.random() * 0.2 + 0.1,
-            speedOffset: Math.random() * Math.PI * 2,
-          });
+          const agentRef = doc(db, 'activeAgents', `${sessionId}__${id}-node-${i}`);
+          batch.set(agentRef, buildNode(id, i, swarmType, taskPrefix));
         }
       }
       await batch.commit();
     } catch (e) {
-      console.error("Failed to execute DB transaction", e);
+      console.error('Failed to execute DB transaction', e);
     }
   };
 
@@ -117,19 +113,12 @@ export default function AgentFactory({ activeAgents, firebaseError, setActiveAge
           <div className="masthead-eyebrow">S4 · Agent factory</div>
           <h2 className="masthead-title">Spawn and retire swarm crews</h2>
           <p className="masthead-sub">
-            Each crew writes live agent nodes to Firestore. Hover the orbs in the ambient canvas
-            to inspect any node's task and load in real time.
+            Each crew launches live agent nodes into your private session. Hover the orbs in the
+            ambient canvas to inspect any node's task and load in real time.
           </p>
         </div>
         <div className="masthead-actions">
-          <button
-            type="button"
-            className="btn"
-            onClick={() => toggleSwarm('manual', 5, 'General', 'Awaiting task')}
-          >
-            <Network size={14} />
-            Spawn custom swarm
-          </button>
+          <span className="badge">{cloudSync ? 'Synced to your session' : 'Local sandbox'}</span>
         </div>
       </div>
 

@@ -1,7 +1,4 @@
-import React from 'react';
 
-// The signature element: navigation as carapace segments. Six plates in a
-// row, the active one lit through its bottom seam like a lifting plate.
 export default function Sidebar({ activeWidget, setActiveWidget, setConstellation }) {
   const plates = [
     { id: 'android-studio', num: 'S1', label: 'ANDROID SWARM', role: '5-agent build crew', mode: 'android-party' },

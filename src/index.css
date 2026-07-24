@@ -780,11 +780,18 @@ input[type='range'] {
   font-weight: 700;
   font-size: 1.6rem;
   line-height: 1.1;
-  /* polished-metal numerals */
-  background: linear-gradient(180deg, #FFFFFF 20%, #B9C6EE);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--frost); /* fallback: solid frost if text-clip is unsupported */
+}
+
+/* polished-metal numerals — only where the browser can clip a gradient to text,
+   so numbers never render invisible on unsupported engines */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .metric-value {
+    background: linear-gradient(180deg, #FFFFFF 20%, #B9C6EE);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
 }
 
 .metric-sub {

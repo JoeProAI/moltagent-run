@@ -1,4 +1,4 @@
-import React, { useRef, useMemo, useState } from 'react';
+import { useRef, useMemo, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Stars, Sphere, Trail, Html } from '@react-three/drei';
 import * as THREE from 'three';
@@ -119,6 +119,7 @@ export default function Canvas3D({ constellationMode, activeAgents }) {
 
     const count = constellationMode === 'cinematic' ? 12 : constellationMode === 'x-growth' ? 24 : 12;
     const items = [];
+    /* eslint-disable react-hooks/purity -- procedural anchor placement; random positions are frozen by useMemo and stable per constellationMode */
     for (let i = 0; i < count; i++) {
       items.push({
         id: `core-anchor-${i}`,
@@ -132,6 +133,7 @@ export default function Canvas3D({ constellationMode, activeAgents }) {
         speedOffset: Math.random() * Math.PI * 2,
       });
     }
+    /* eslint-enable react-hooks/purity */
     // Main Gravity Core
     items.push({
       id: 'AETHER-CORE',

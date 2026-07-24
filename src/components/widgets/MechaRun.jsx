@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Zap,
   Cpu,
@@ -8,20 +8,21 @@ import {
   Brain,
   CreditCard
 } from 'lucide-react';
-import { db, doc, collection, getDocs, writeBatch } from '../../firebase';
+import { db, doc, collection, query, where, getDocs, writeBatch } from '../../firebase';
 
-export default function MechaRun({ firebaseError, setActiveAgents }) {
+export default function MechaRun({ cloudSync, sessionId, setActiveAgents }) {
   const [activeTab, setActiveTab] = useState('mecha-engine');
   const [mechaPrompt, setMechaPrompt] = useState('Audit Android codebase, generate Jetpack Compose design system, and execute 10-agent Codex swarm sweep');
   const [isSwarmRunning, setIsSwarmRunning] = useState(false);
   const [codexCount, setCodexCount] = useState(10);
   const [checkoutStatus, setCheckoutStatus] = useState(null);
 
-  // Mirror AgentFactory's swarm persistence: dispatched Codex agents become
-  // live nodes in Firestore (or local state in degraded mode) so the header
-  // count and ambient canvas react to a real dispatch.
+  // Dispatched Codex agents become live nodes in this session's swarm so the
+  // header count and ambient canvas react to a real dispatch. Every doc is
+  // owner-scoped so concurrent visitors never collide.
   const spawnMechaAgents = async (count) => {
     const agents = Array.from({ length: count }).map((_, i) => ({
+      owner: sessionId,
       swarmId: 'mecha',
       type: 'Codex Sandbox',
       task: `Parallel sweep partition ${i}`,
@@ -33,7 +34,7 @@ export default function MechaRun({ firebaseError, setActiveAgents }) {
       speedOffset: Math.random() * Math.PI * 2
     }));
 
-    if (firebaseError) {
+    if (!cloudSync) {
       setActiveAgents?.(current => [
         ...current.filter(a => a.swarmId !== 'mecha'),
         ...agents.map((a, i) => ({ ...a, id: `mecha-node-${i}` }))
@@ -43,7 +44,7 @@ export default function MechaRun({ firebaseError, setActiveAgents }) {
     try {
       const batch = writeBatch(db);
       agents.forEach((agent, i) => {
-        batch.set(doc(db, 'activeAgents', `mecha-node-${i}`), agent);
+        batch.set(doc(db, 'activeAgents', `${sessionId}__mecha-node-${i}`), agent);
       });
       await batch.commit();
     } catch (e) {
@@ -52,13 +53,14 @@ export default function MechaRun({ firebaseError, setActiveAgents }) {
   };
 
   const clearMechaAgents = async () => {
-    if (firebaseError) {
+    if (!cloudSync) {
       setActiveAgents?.(current => current.filter(a => a.swarmId !== 'mecha'));
       return;
     }
     try {
       const batch = writeBatch(db);
-      const snapshot = await getDocs(collection(db, 'activeAgents'));
+      const ownScope = query(collection(db, 'activeAgents'), where('owner', '==', sessionId));
+      const snapshot = await getDocs(ownScope);
       snapshot.forEach(document => {
         if (document.data().swarmId === 'mecha') {
           batch.delete(doc(db, 'activeAgents', document.id));
@@ -80,6 +82,7 @@ export default function MechaRun({ firebaseError, setActiveAgents }) {
       });
       const result = await response.json();
       if (result.success && result.url) {
+        // eslint-disable-next-line react-hooks/immutability -- intentional checkout redirect
         window.location.href = result.url;
         return;
       }

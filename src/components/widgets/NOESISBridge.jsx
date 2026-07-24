@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Server, Shield, Zap, Loader, Terminal } from 'lucide-react';
 import { db, doc, setDoc } from '../../firebase';
 
-export default function NOESISBridge({ isSynced, setIsSynced, daytonaCredits, setDaytonaCredits, firebaseError }) {
+export default function NOESISBridge({ isSynced, setIsSynced, daytonaCredits, setDaytonaCredits, cloudSync, sessionId }) {
   const [isSpinning, setIsSpinning] = useState(false);
   const [activeWorkspace, setActiveWorkspace] = useState(false);
 
   const handleSync = async () => {
     const newState = !isSynced;
     setIsSynced(newState);
-    if (!firebaseError) {
-      await setDoc(doc(db, 'system', 'core'), { isSynced: newState }, { merge: true }).catch(console.error);
+    if (cloudSync) {
+      await setDoc(doc(db, 'userState', sessionId), { isSynced: newState, owner: sessionId }, { merge: true }).catch(console.error);
     }
   };
 
@@ -22,7 +22,7 @@ export default function NOESISBridge({ isSynced, setIsSynced, daytonaCredits, se
 
     setIsSpinning(true);
 
-    if (firebaseError) {
+    if (!cloudSync) {
       setTimeout(() => {
         setIsSpinning(false);
         setActiveWorkspace(true);
@@ -37,7 +37,7 @@ export default function NOESISBridge({ isSynced, setIsSynced, daytonaCredits, se
         setActiveWorkspace(true);
         const newCredits = Math.max(0, daytonaCredits - 120);
         setDaytonaCredits(newCredits);
-        await setDoc(doc(db, 'system', 'core'), { daytonaCredits: newCredits }, { merge: true });
+        await setDoc(doc(db, 'userState', sessionId), { daytonaCredits: newCredits, owner: sessionId }, { merge: true });
       }, 2000);
     } catch (e) {
       console.error(e);
