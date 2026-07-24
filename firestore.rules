@@ -1,0 +1,23 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // AETHER Security Rules
+    
+    // Allow read/write access to the activeAgents collection for swarm tracking
+    match /activeAgents/{agentId} {
+      allow read, write: if true; 
+    }
+    
+    // Allow read/write access to the core system settings
+    match /system/{docId} {
+      allow read, write: if true;
+    }
+    
+    // Default deny for everything else to keep the database secure
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
