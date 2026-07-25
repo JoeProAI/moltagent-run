@@ -1,11 +1,10 @@
-
 export default function Sidebar({ activeWidget, setActiveWidget, setConstellation }) {
   const plates = [
-    { id: 'android-studio', num: 'S1', label: 'APP SWARM', role: 'Web · mobile · backend', mode: 'android-party' },
+    { id: 'android-studio', num: 'S1', label: 'APP SWARM', role: 'Multi-agent coding', mode: 'android-party' },
     { id: 'carapace-firewall', num: 'S2', label: 'CARAPAX FIREWALL', role: 'Memory integrity', mode: 'carapace-sec' },
-    { id: 'mecha-run', num: 'S3', label: 'M.E.C.H.A. RUN', role: '60-agent orchestrator', mode: 'mecha-party' },
+    { id: 'mecha-run', num: 'S3', label: 'M.E.C.H.A. RUN', role: 'Quad-crew debate', mode: 'mecha-party' },
     { id: 'factory', num: 'S4', label: 'AGENT FACTORY', role: 'Spawn swarm crews', mode: 'cinematic' },
-    { id: 'x-growth', num: 'S5', label: 'X MULTIPLIER', role: '@JoePro growth studio', mode: 'x-growth' },
+    { id: 'x-growth', num: 'S5', label: 'X MULTIPLIER', role: 'Content growth engine', mode: 'x-growth' },
     { id: 'bridge', num: 'S6', label: 'HYBRID BRIDGE', role: 'Local-cloud routing', mode: 'research' },
   ];
 

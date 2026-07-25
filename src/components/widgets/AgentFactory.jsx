@@ -20,6 +20,9 @@ export default function AgentFactory({ activeAgents, cloudSync, sessionId, setAc
     /* eslint-enable react-hooks/set-state-in-effect */
   }, [activeAgents]);
 
+  // buildNode runs from event handlers (toggleSwarm, handleRunAgentParty) —
+  // never during render. Math.random is for cosmetic scatter, not logic.
+  /* eslint-disable react-hooks/purity */
   const buildNode = (id, i, swarmType, taskPrefix) => ({
     owner: sessionId,
     swarmId: id,
@@ -32,6 +35,7 @@ export default function AgentFactory({ activeAgents, cloudSync, sessionId, setAc
     speed: Math.random() * 0.2 + 0.1,
     speedOffset: Math.random() * Math.PI * 2,
   });
+  /* eslint-enable react-hooks/purity */
 
   const toggleSwarm = async (id, count, swarmType, taskPrefix) => {
     const isCurrentlyRunning = runningSwarms[id];
