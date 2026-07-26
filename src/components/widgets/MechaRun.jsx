@@ -16,6 +16,7 @@ export default function MechaRun({ cloudSync, sessionId, setActiveAgents }) {
   const [isSwarmRunning, setIsSwarmRunning] = useState(false);
   const [codexCount, setCodexCount] = useState(10);
   const [checkoutStatus, setCheckoutStatus] = useState(null);
+  const [debateLive, setDebateLive] = useState(null);
 
   // Dispatched Codex agents become live nodes in this session's swarm so the
   // header count and ambient canvas react to a real dispatch. Every doc is
@@ -110,17 +111,47 @@ export default function MechaRun({ cloudSync, sessionId, setActiveAgents }) {
     { title: 'Android CLI Specialist', category: 'Skill Matrix', size: '9.2 KB', vectors: '640', status: 'ACTIVE' }
   ];
 
-  const handleLaunchMechaSwarm = () => {
+  // Real Quad Crew debate via /api/mecha-debate (Grok on Joe's xAI key).
+  // Falls back to a clearly-labeled scripted debate when the key isn't set.
+  const handleLaunchMechaSwarm = async () => {
     if (isSwarmRunning) return;
     setIsSwarmRunning(true);
+    setDebateLive(null);
     spawnMechaAgents(codexCount);
 
-    const steps = [
-      { role: 'PILOT', agent: 'Grok Leader', msg: `Broadcasting task across ${codexCount} Codex cloud sandboxes.` },
-      { role: 'HARPER', agent: 'Researcher', msg: 'Querying gBrain Limitless ingest for UI vector embeddings.' },
-      { role: 'BENJAMIN', agent: 'Critic & Logic', msg: 'Stress testing memory safety & async coroutine locks.' },
-      { role: 'LUCAS', agent: 'Executor', msg: `Swarm run completed. ${codexCount} parallel tasks synthesized into production build.` }
-    ];
+    const roleTitles = {
+      PILOT: 'Grok Leader',
+      HARPER: 'Researcher',
+      BENJAMIN: 'Critic & Logic',
+      LUCAS: 'Executor'
+    };
+
+    let steps;
+    let live = false;
+    try {
+      const response = await fetch('/api/mecha-debate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ task: mechaPrompt })
+      });
+      const result = await response.json();
+      if (response.ok && result.success) {
+        live = true;
+        steps = result.transcript.map(t => ({ role: t.role, agent: roleTitles[t.role] || 'Agent', msg: t.msg }));
+      }
+    } catch {
+      // fall through to the scripted debate
+    }
+
+    if (!steps) {
+      steps = [
+        { role: 'PILOT', agent: 'Grok Leader', msg: `Broadcasting task across ${codexCount} Codex cloud sandboxes.` },
+        { role: 'HARPER', agent: 'Researcher', msg: 'Querying gBrain Limitless ingest for UI vector embeddings.' },
+        { role: 'BENJAMIN', agent: 'Critic & Logic', msg: 'Stress testing memory safety & async coroutine locks.' },
+        { role: 'LUCAS', agent: 'Executor', msg: `Swarm run completed. ${codexCount} parallel tasks synthesized into production build.` }
+      ];
+    }
+    setDebateLive(live);
 
     steps.forEach((step, idx) => {
       setTimeout(() => {
@@ -263,7 +294,9 @@ export default function MechaRun({ cloudSync, sessionId, setActiveAgents }) {
             <div className="panel sunken">
               <div className="panel-head">
                 <div className="panel-title">Quad Crew debate stream</div>
-                <span className="panel-note">port 8766 · live</span>
+                {debateLive === null && <span className="panel-note">Powered by Grok</span>}
+                {debateLive === true && <span className="badge ok">Live Grok debate</span>}
+                {debateLive === false && <span className="badge">Simulated — set XAI_API_KEY for live</span>}
               </div>
               <div className="console">
                 {quadLogs.map((log, idx) => (
