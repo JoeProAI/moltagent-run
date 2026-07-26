@@ -1,15 +1,16 @@
+// The signature element: navigation as carapace segments. Plain names, one
+// job each — Home explains everything, tools are real, the Lab is labeled.
 export default function Sidebar({ activeWidget, setActiveWidget, setConstellation }) {
   const plates = [
-    { id: 'android-studio', num: 'S1', label: 'APP SWARM', role: 'Multi-agent coding', mode: 'android-party' },
-    { id: 'carapace-firewall', num: 'S2', label: 'CARAPAX FIREWALL', role: 'Memory integrity', mode: 'carapace-sec' },
-    { id: 'mecha-run', num: 'S3', label: 'M.E.C.H.A. RUN', role: 'Quad-crew debate', mode: 'mecha-party' },
-    { id: 'factory', num: 'S4', label: 'AGENT FACTORY', role: 'Spawn swarm crews', mode: 'cinematic' },
-    { id: 'x-growth', num: 'S5', label: 'X MULTIPLIER', role: 'Content growth engine', mode: 'x-growth' },
-    { id: 'bridge', num: 'S6', label: 'OUTPOST LAUNCHER', role: 'Devin outposts on Daytona', mode: 'research' },
+    { id: 'home', num: '01', label: 'HOME', role: 'Start here', mode: 'research' },
+    { id: 'bridge', num: '02', label: 'OUTPOSTS', role: 'Real Daytona sandboxes', mode: 'research' },
+    { id: 'mecha-run', num: '03', label: 'DEBATE', role: 'Four Grok agents argue it', mode: 'mecha-party' },
+    { id: 'x-growth', num: '04', label: 'STUDIO', role: 'X hooks & threads', mode: 'x-growth' },
+    { id: 'lab', num: '05', label: 'LAB', role: 'Concept demos', mode: 'cinematic' },
   ];
 
   return (
-    <nav className="plate-nav" aria-label="Studio modules">
+    <nav className="plate-nav" aria-label="Site sections">
       {plates.map(plate => (
         <button
           key={plate.id}

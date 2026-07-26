@@ -142,11 +142,12 @@ export default function XGrowth({ setActiveAgents }) {
 
       <div className="masthead">
         <div>
-          <div className="masthead-eyebrow">S5 · X multiplier</div>
-          <h2 className="masthead-title">Grow @JoePro with 25 parallel hook testers</h2>
+          <div className="masthead-eyebrow">Studio</div>
+          <h2 className="masthead-title">Write X hooks and threads with Grok</h2>
           <p className="masthead-sub">
-            Live telemetry from the official X API v2, plus an A/B engine that drafts 25 tweet-hook
-            variants in parallel and surfaces the one predicted to retain readers longest.
+            Type a topic and get 25 scored tweet hooks with the predicted winner on top, or expand
+            a rough draft into a ready-to-post 5-tweet thread. Optional: connect an X API token to
+            see live account metrics.
           </p>
         </div>
         <div className="masthead-actions">
@@ -161,7 +162,7 @@ export default function XGrowth({ setActiveAgents }) {
               {isSimulating ? <RefreshCw size={14} className="spin" /> : <Sparkles size={14} />}
               {isSimulating ? 'Testing 25 variants…' : 'Generate 25 hook variants'}
             </button>
-            <span className="btn-hint">Claude drafts and ranks hooks for your topic below</span>
+            <span className="btn-hint">Grok drafts and ranks hooks for your topic below</span>
           </div>
         </div>
       </div>
@@ -226,7 +227,7 @@ export default function XGrowth({ setActiveAgents }) {
             <Zap size={15} />
             Viral hook A/B simulator
           </div>
-          <span className="panel-note">25 variants drafted and scored by Claude</span>
+          <span className="panel-note">25 variants drafted and scored by Grok</span>
         </div>
 
         <label className="field-label" htmlFor="hook-topic">Topic to write hooks about</label>

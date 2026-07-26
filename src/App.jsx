@@ -2,30 +2,28 @@ import { useState, useEffect, lazy, Suspense } from 'react';
 import Sidebar from './components/Sidebar';
 import MouseConstellation from './components/MouseConstellation';
 import ErrorBoundary from './components/ErrorBoundary';
-import AndroidStudio from './components/widgets/AndroidStudio';
-import CarapaceFirewall from './components/widgets/CarapaceFirewall';
+import Home from './components/widgets/Home';
+import Lab from './components/widgets/Lab';
 import MechaRun from './components/widgets/MechaRun';
-import AgentFactory from './components/widgets/AgentFactory';
 import XGrowth from './components/widgets/XGrowth';
 import NOESISBridge from './components/widgets/NOESISBridge';
 
 const Canvas3D = lazy(() => import('./components/Canvas3D'));
 
 function App() {
-  const [activeWidget, setActiveWidget] = useState('android-studio');
-  const [constellation, setConstellation] = useState('android-party');
+  const [activeWidget, setActiveWidget] = useState('home');
+  const [constellation, setConstellation] = useState('research');
   const [activeAgents, setActiveAgents] = useState([]);
 
   // Derive canvas constellation from active widget
   useEffect(() => {
     /* eslint-disable react-hooks/set-state-in-effect */
     const map = {
-      'android-studio': 'android-party',
-      'carapace-firewall': 'carapace-sec',
-      'mecha-run': 'mecha-party',
-      'factory': 'cinematic',
-      'x-growth': 'x-growth',
+      'home': 'research',
       'bridge': 'research',
+      'mecha-run': 'mecha-party',
+      'x-growth': 'x-growth',
+      'lab': 'cinematic',
     };
     setConstellation(map[activeWidget] || 'research');
     /* eslint-enable react-hooks/set-state-in-effect */
@@ -79,23 +77,20 @@ function App() {
         </Suspense>
 
         <ErrorBoundary key={activeWidget}>
-          {activeWidget === 'android-studio' && (
-            <AndroidStudio setActiveAgents={setActiveAgents} activeAgents={activeAgents} />
+          {activeWidget === 'home' && (
+            <Home onNavigate={setActiveWidget} />
           )}
-          {activeWidget === 'x-growth' && (
-            <XGrowth setActiveAgents={setActiveAgents} />
-          )}
-          {activeWidget === 'carapace-firewall' && (
-            <CarapaceFirewall />
+          {activeWidget === 'bridge' && (
+            <NOESISBridge />
           )}
           {activeWidget === 'mecha-run' && (
             <MechaRun setActiveAgents={setActiveAgents} />
           )}
-          {activeWidget === 'factory' && (
-            <AgentFactory setActiveAgents={setActiveAgents} activeAgents={activeAgents} />
+          {activeWidget === 'x-growth' && (
+            <XGrowth setActiveAgents={setActiveAgents} />
           )}
-          {activeWidget === 'bridge' && (
-            <NOESISBridge />
+          {activeWidget === 'lab' && (
+            <Lab setActiveAgents={setActiveAgents} activeAgents={activeAgents} />
           )}
         </ErrorBoundary>
       </main>
