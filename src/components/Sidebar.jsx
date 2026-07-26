@@ -5,7 +5,7 @@ export default function Sidebar({ activeWidget, setActiveWidget, setConstellatio
     { id: 'mecha-run', num: 'S3', label: 'M.E.C.H.A. RUN', role: 'Quad-crew debate', mode: 'mecha-party' },
     { id: 'factory', num: 'S4', label: 'AGENT FACTORY', role: 'Spawn swarm crews', mode: 'cinematic' },
     { id: 'x-growth', num: 'S5', label: 'X MULTIPLIER', role: 'Content growth engine', mode: 'x-growth' },
-    { id: 'bridge', num: 'S6', label: 'HYBRID BRIDGE', role: 'Local-cloud routing', mode: 'research' },
+    { id: 'bridge', num: 'S6', label: 'OUTPOST LAUNCHER', role: 'Devin outposts on Daytona', mode: 'research' },
   ];
 
   return (

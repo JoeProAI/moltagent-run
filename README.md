@@ -36,6 +36,8 @@ Space Grotesk display, Plus Jakarta Sans body, JetBrains Mono for data.
 | `POST /api/x-metrics` | Proxies X API v2 (browsers are CORS-blocked from api.twitter.com) | Optional `X_BEARER_TOKEN` fallback; token can also be pasted in the UI |
 | `POST /api/generate-hooks` | Generates and scores 25 tweet hooks with Claude | `ANTHROPIC_API_KEY` |
 | `POST /api/checkout` | Creates a Stripe Checkout Session per tier | `STRIPE_SECRET_KEY`, `STRIPE_PRICE_DEVELOPER`, `STRIPE_PRICE_SWARM_PRO`, `STRIPE_PRICE_ENTERPRISE_SWARM` |
+| `POST /api/mecha-debate` | Real 4-turn Quad Crew debate on Grok (xAI) | `XAI_API_KEY` (optional `XAI_MODEL`, default `grok-4-fast`) |
+| `GET/POST/DELETE /api/outposts` | Outpost gateway: capped, auto-expiring Daytona sandboxes per Firebase session; optional Devin outpost token injected once, never stored | `DAYTONA_API_KEY` (optional `DAYTONA_SNAPSHOT`, `OUTPOST_MAX_PER_USER`, `OUTPOST_AUTO_STOP_MIN`, `OUTPOST_AUTO_DELETE_MIN`) |
 
 Each function degrades gracefully: the UI shows an honest "not configured"
 state instead of pretending, until the env vars are set in Vercel.

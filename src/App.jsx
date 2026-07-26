@@ -95,12 +95,7 @@ function App() {
             <AgentFactory setActiveAgents={setActiveAgents} activeAgents={activeAgents} />
           )}
           {activeWidget === 'bridge' && (
-            <NOESISBridge
-              isSynced={false}
-              setIsSynced={() => {}}
-              daytonaCredits={0}
-              setDaytonaCredits={() => {}}
-            />
+            <NOESISBridge />
           )}
         </ErrorBoundary>
       </main>
@@ -113,7 +108,7 @@ function App() {
         right: 0,
         zIndex: 50,
         padding: '12px 24px',
-        background: 'var(--ink)',
+        background: 'var(--ink-0)',
         borderTop: '1px solid var(--seam)',
         display: 'flex',
         justifyContent: 'space-between',
