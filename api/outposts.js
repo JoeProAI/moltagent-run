@@ -78,7 +78,8 @@ export default async function handler(req, res) {
     return res.status(403).json({
       success: false,
       error: 'PRIVATE_OPERATOR_ONLY',
-      message: 'Private operator mode is active. Add this browser UID to OUTPOST_OPERATOR_UIDS before enabling managed launches.'
+      message: 'Private operator mode is active. Add this browser UID to OUTPOST_OPERATOR_UIDS before enabling managed launches.',
+      snapshotConfigured: Boolean(process.env.DAYTONA_SNAPSHOT),
     });
   }
 

@@ -11,7 +11,7 @@ import { auth, signInAnonymously, onAuthStateChanged } from '../../firebase';
 export default function NOESISBridge({ onNavigate }) {
   const [sessionUser, setSessionUser] = useState(null);
   const [outposts, setOutposts] = useState([]);
-  const [gatewayState, setGatewayState] = useState('loading'); // loading | ready | offline | unauthed
+  const [gatewayState, setGatewayState] = useState('loading'); // loading | ready | offline | unauthed | private
   const [gatewayMessage, setGatewayMessage] = useState('');
   const [snapshotConfigured, setSnapshotConfigured] = useState(false);
   const [devinToken, setDevinToken] = useState('');
@@ -56,6 +56,12 @@ export default function NOESISBridge({ onNavigate }) {
       if (status === 401) {
         setGatewayState('unauthed');
         setGatewayMessage('Session expired — reload the page.');
+        return;
+      }
+      if (status === 403) {
+        setGatewayState('private');
+        setSnapshotConfigured(Boolean(result.snapshotConfigured));
+        setGatewayMessage(result.message || 'This browser is not authorized for private Outposts access.');
         return;
       }
       if (result.success) {
@@ -128,7 +134,7 @@ export DEVIN_OUTPOST_TOKEN="your_outpost_token_here"
   };
 
   const launchReady = gatewayState === 'ready' && snapshotConfigured;
-  const launchState = launchReady ? 'Ready to provision' : snapshotConfigured ? 'Control path unavailable' : 'Runtime image pending';
+  const launchState = launchReady ? 'Ready to provision' : gatewayState === 'private' ? 'Private access required' : snapshotConfigured ? 'Control path unavailable' : 'Runtime image pending';
 
   return (
     <div className="module outpost-atelier">
