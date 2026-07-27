@@ -55,21 +55,25 @@ export default function Home({ onNavigate }) {
   return (
     <div className="module">
 
-      <div className="masthead">
+      <div className="masthead command-masthead">
         <div>
-          <div className="masthead-eyebrow">JoePro AI</div>
-          <h2 className="masthead-title">Coding agents on real cloud infrastructure</h2>
+          <div className="masthead-eyebrow">JOEPRO AI · OPERATIONS DECK</div>
+          <h2 className="masthead-title">Run agents on infrastructure you can inspect.</h2>
           <p className="masthead-sub">
-            Three working tools: launch Daytona outpost sandboxes for Devin, debate engineering
-            decisions with a Grok agent crew, and generate X content that's ready to post.
-            Built in public by @JoePro.
+            A practical control plane for Devin Outposts, engineering debate, and signal production.
+            Start with the field guide, then put work into a controlled environment.
           </p>
+        </div>
+        <div className="command-readout" aria-label="System status">
+          <span>NODE</span><strong>JOEPRO-01</strong>
+          <span>MODE</span><strong>PRIVATE BUILD</strong>
+          <span>STATUS</span><strong className="status-ok">NOMINAL</strong>
         </div>
       </div>
 
-      <div className="grid cols-3">
+      <div className="grid cols-3 command-tools">
         {tools.map(tool => (
-          <div key={tool.id} className="panel" style={{ display: 'flex', flexDirection: 'column' }}>
+          <div key={tool.id} className="panel command-tool" style={{ display: 'flex', flexDirection: 'column' }}>
             <div className="panel-head">
               <div className="panel-title">
                 {tool.icon}

@@ -2,12 +2,12 @@
 // job each — Home explains everything, tools are real, the Lab is labeled.
 export default function Sidebar({ activeWidget, setActiveWidget, setConstellation }) {
   const plates = [
-    { id: 'home', num: '01', label: 'HOME', role: 'Start here', mode: 'research' },
-    { id: 'guide', num: '02', label: 'GUIDE', role: 'Devin Outposts field manual', mode: 'research' },
-    { id: 'bridge', num: '03', label: 'OUTPOSTS', role: 'Private sandbox validation', mode: 'research' },
-    { id: 'mecha-run', num: '04', label: 'DEBATE', role: 'Four Grok agents argue it', mode: 'mecha-party' },
-    { id: 'x-growth', num: '05', label: 'STUDIO', role: 'X hooks & threads', mode: 'x-growth' },
-    { id: 'lab', num: '06', label: 'LAB', role: 'Concept demos', mode: 'cinematic' },
+    { id: 'home', num: '01', label: 'COMMAND', role: 'System overview', mode: 'research' },
+    { id: 'guide', num: '02', label: 'FIELD GUIDE', role: 'Devin Outposts manual', mode: 'research' },
+    { id: 'bridge', num: '03', label: 'OUTPOSTS', role: 'Sandbox control', mode: 'research' },
+    { id: 'mecha-run', num: '04', label: 'DEBATE', role: 'Decision cell', mode: 'mecha-party' },
+    { id: 'x-growth', num: '05', label: 'SIGNALS', role: 'X writing studio', mode: 'x-growth' },
+    { id: 'lab', num: '06', label: 'PROVING GROUND', role: 'Concept systems', mode: 'cinematic' },
   ];
 
   return (

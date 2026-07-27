@@ -37,19 +37,19 @@ function App() {
 
       <header className="header" style={{ marginBottom: 0 }}>
         <div className="brand" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '2px' }}>
-          <span className="brand-mark">JOEPRO<em>AI</em></span>
+          <span className="brand-mark">MOLTAGENT<em>.RUN</em></span>
           <span className="brand-tag" style={{ fontSize: '0.6rem', marginTop: 0 }}>
-            Stop soloing, start conducting
+            Agent operations console
           </span>
         </div>
         <div className="telemetry">
           <span className="chip">
-            <span className="dot hot" />
-            <strong>Multi-agent systems</strong>
+            <span className="dot ok" />
+            <strong>System nominal</strong>
           </span>
           <span className="chip">
-            <span className="dot ok" />
-            <strong>Open source</strong>
+            <span className="dot hot" />
+            <strong>JoePro AI</strong>
           </span>
           {activeAgents.length > 0 && (
             <span className="chip">
@@ -123,7 +123,7 @@ function App() {
           Built by{' '}
           <a href="https://x.com/JoePro" target="_blank" rel="noopener noreferrer"
             style={{ color: 'var(--amber)', textDecoration: 'none' }}>@JoePro</a>
-          {' '}· Multi-agent swarm workbench
+          {' '}· Agent infrastructure, under your control
         </span>
         <span style={{ display: 'flex', gap: 'var(--sp-3)' }}>
           <a href="https://youtube.com/@JoeProAI" target="_blank" rel="noopener noreferrer"

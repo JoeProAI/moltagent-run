@@ -7,36 +7,36 @@
    ========================================================================== */
 
 :root {
-  /* Indigo ink stack — deep, cool, luminous */
-  --ink-0: #090B14;
-  --ink-1: #0F1322;
-  --ink-2: #171C30;
-  --ink-3: #212743;
+  /* Control room stack — neutral carbon, oxidized metal, restrained amber */
+  --ink-0: #0a0c0a;
+  --ink-1: #111410;
+  --ink-2: #191d18;
+  --ink-3: #252b23;
 
-  /* Seams */
-  --seam: #232A47;
-  --seam-strong: #39426B;
+  /* Steel seams */
+  --seam: #30362d;
+  --seam-strong: #59604e;
 
-  /* Amber resin — the primary accent */
-  --amber: #E8A832;
-  --amber-bright: #FFC24B;
-  --amber-dim: rgba(232, 168, 50, 0.14);
-  --amber-faint: rgba(232, 168, 50, 0.06);
+  /* Signal amber — the only warm emphasis */
+  --amber: #dcae55;
+  --amber-bright: #f4cb73;
+  --amber-dim: rgba(220, 174, 85, 0.15);
+  --amber-faint: rgba(220, 174, 85, 0.06);
 
-  /* Ice — cool secondary accent for depth */
-  --ice: #8FA3FF;
-  --ice-dim: rgba(143, 163, 255, 0.14);
+  /* Terminal phosphor — secondary operational signal */
+  --ice: #a7c69a;
+  --ice-dim: rgba(167, 198, 154, 0.12);
 
   /* Status */
-  --ok: #63E6BE;
-  --ok-dim: rgba(99, 230, 190, 0.12);
-  --danger: #F2555A;
-  --danger-dim: rgba(242, 85, 90, 0.14);
+  --ok: #9ccf74;
+  --ok-dim: rgba(156, 207, 116, 0.12);
+  --danger: #e1745d;
+  --danger-dim: rgba(225, 116, 93, 0.14);
 
-  /* Frost text ramp */
-  --frost: #EDF1FC;
-  --frost-2: #A9B2CC;
-  --frost-3: #6C7594;
+  /* Bone text ramp */
+  --frost: #f0f0df;
+  --frost-2: #b9bba9;
+  --frost-3: #808579;
 
   /* Type */
   --font-display: 'Space Grotesk', sans-serif;
@@ -1256,4 +1256,126 @@ input[type='range'] {
   .guide-steps li:last-child { border-bottom: none; }
   .guide-callout { flex-wrap: wrap; }
   .guide-callout .btn { margin-left: 30px; }
+}
+
+/* ==========================================================================
+   COMMAND DECK OVERRIDE
+   Cognition clarity, Devin operational structure, restrained field-terminal
+   material. The interface is an instrument panel, not a game prop.
+   ========================================================================== */
+
+.app-shell {
+  background:
+    radial-gradient(circle at 85% -10%, rgba(156, 207, 116, 0.07), transparent 28%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    var(--ink-0);
+  background-size: auto, 5px 5px, auto;
+}
+
+.header {
+  height: 68px;
+  padding: 0 clamp(16px, 3vw, 38px);
+  border-bottom-color: var(--seam-strong);
+  background: linear-gradient(180deg, rgba(30, 34, 28, 0.98), rgba(13, 16, 12, 0.98));
+  box-shadow: inset 0 1px 0 rgba(240, 240, 223, 0.06), 0 8px 30px rgba(0, 0, 0, 0.18);
+}
+
+.brand-mark { letter-spacing: -0.035em; font-size: 1.14rem; }
+.brand-mark em { color: var(--amber); text-shadow: none; }
+.brand-tag { color: var(--ice); letter-spacing: 0.16em; }
+.chip { border-color: rgba(89, 96, 78, 0.75); background: rgba(10, 12, 10, 0.45); color: var(--frost-3); }
+.chip strong { font-size: 0.64rem; letter-spacing: 0.04em; text-transform: uppercase; }
+.identity { border-left-color: var(--seam-strong); }
+.identity-sigil { border-radius: 50%; clip-path: none; background: var(--ink-0); border-color: var(--ice); color: var(--ice); text-shadow: none; }
+
+.plate-nav { padding: 0 clamp(8px, 2vw, 26px); gap: 3px; border-bottom-color: var(--seam-strong); background: rgba(17, 20, 16, 0.96); }
+.plate {
+  flex: 0 0 auto;
+  min-width: 148px;
+  padding: 11px 13px 10px;
+  border: 1px solid transparent;
+  border-bottom: none;
+  clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 0 100%);
+}
+.plate::after { height: 1px; }
+.plate:hover { background: rgba(167, 198, 154, 0.07); }
+.plate.active { border-color: var(--seam-strong); background: linear-gradient(180deg, rgba(156, 207, 116, 0.11), rgba(156, 207, 116, 0.025)); }
+.plate.active::after { background: var(--ok); }
+.plate.active .plate-id { color: var(--ok); }
+.plate-label { font-size: 0.72rem; letter-spacing: 0.08em; }
+.plate-role { font-family: var(--font-mono); font-size: 0.56rem; }
+
+.workspace { padding: clamp(16px, 3vw, 36px) clamp(16px, 4vw, 64px) 86px; }
+.module { max-width: 1420px; margin: 0 auto; }
+.masthead { padding-bottom: var(--sp-5); border-bottom: 1px solid var(--seam); }
+.masthead-eyebrow { color: var(--ice); letter-spacing: 0.16em; }
+.masthead-title { max-width: 780px; font-size: clamp(1.7rem, 3.5vw, 2.7rem); line-height: 1.03; letter-spacing: -0.04em; }
+.masthead-sub { max-width: 690px; font-size: 0.85rem; line-height: 1.7; }
+
+.panel, .roster-row, .metric, .guide-runbook, .guide-panel {
+  border-color: var(--seam);
+  border-radius: 0;
+  box-shadow: inset 0 1px 0 rgba(240, 240, 223, 0.03);
+  background: linear-gradient(145deg, rgba(30, 34, 28, 0.9), rgba(14, 17, 13, 0.94));
+}
+.panel { position: relative; }
+.panel::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 28px;
+  height: 1px;
+  background: var(--amber);
+}
+.panel.sunken { background: rgba(5, 7, 5, 0.58); }
+.panel-title { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.07em; text-transform: uppercase; }
+.panel-note, .field-label, .btn-hint { font-family: var(--font-mono); font-size: 0.61rem; letter-spacing: 0.04em; }
+
+.btn { min-height: 38px; border-radius: 0; border-color: var(--seam-strong); background: rgba(240, 240, 223, 0.035); color: var(--frost); font-family: var(--font-mono); font-size: 0.67rem; letter-spacing: 0.045em; text-transform: uppercase; }
+.btn:hover:not(:disabled) { border-color: var(--ice); background: rgba(167, 198, 154, 0.1); }
+.btn.primary { border-color: var(--amber); color: #161207; background: var(--amber); }
+.btn.primary:hover:not(:disabled) { background: var(--amber-bright); border-color: var(--amber-bright); }
+.btn:disabled { opacity: 0.45; }
+.badge { border-radius: 999px; border-color: var(--seam-strong); background: rgba(240, 240, 223, 0.04); color: var(--frost-2); font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.07em; text-transform: uppercase; }
+.badge.ok { border-color: rgba(156, 207, 116, 0.65); background: var(--ok-dim); color: var(--ok); }
+.field, .textarea { border-radius: 0; border-color: var(--seam-strong); background: rgba(4, 6, 4, 0.68); color: var(--frost); font-family: var(--font-mono); }
+.field:focus, .textarea:focus { border-color: var(--amber); box-shadow: 0 0 0 2px var(--amber-faint); }
+
+.command-masthead { display: flex; justify-content: space-between; gap: var(--sp-6); align-items: flex-end; }
+.command-readout { min-width: 215px; display: grid; grid-template-columns: 1fr auto; gap: 5px 18px; padding: 12px 14px; border: 1px solid var(--seam-strong); background: rgba(7, 9, 7, 0.74); font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.08em; }
+.command-readout span { color: var(--frost-3); }
+.command-readout strong { color: var(--frost-2); font-weight: 500; }
+.command-readout .status-ok { color: var(--ok); }
+.command-tools .command-tool { min-height: 232px; overflow: hidden; }
+.command-tools .command-tool:nth-child(1)::after { content: '01'; }
+.command-tools .command-tool:nth-child(2)::after { content: '02'; }
+.command-tools .command-tool:nth-child(3)::after { content: '03'; }
+.command-tools .command-tool::after { position: absolute; right: 14px; bottom: -20px; color: rgba(240, 240, 223, 0.035); font: 700 5rem var(--font-display); pointer-events: none; }
+
+.console { border-color: var(--seam); background: #070907; }
+.log-agent { color: var(--ok); }
+.log-time { color: var(--frost-3); }
+.roster-row { border-left: 2px solid var(--seam-strong); }
+.roster-row:hover { border-left-color: var(--amber); }
+.tabset { border-color: var(--seam-strong); background: rgba(4, 6, 4, 0.5); }
+.tab { border-radius: 0; color: var(--frost-3); font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.06em; }
+.tab.active { color: var(--ink-0); background: var(--ice); }
+
+.guide-hero { border-color: var(--seam-strong); background: linear-gradient(90deg, rgba(22, 27, 20, 0.98), rgba(12, 15, 11, 0.85)), repeating-linear-gradient(0deg, transparent 0 4px, rgba(167, 198, 154, 0.035) 4px 5px); }
+.guide-hero::before { background: linear-gradient(125deg, transparent 14%, rgba(220, 174, 85, 0.1) 14.1%, transparent 14.3%); }
+.guide-panel-primary { background: linear-gradient(150deg, rgba(167, 198, 154, 0.12), var(--ink-1) 52%); }
+.guide-footnote { background: rgba(167, 198, 154, 0.07); }
+
+@media (max-width: 900px) {
+  .command-masthead { align-items: flex-start; flex-direction: column; }
+  .command-readout { width: 100%; max-width: 340px; }
+}
+
+@media (max-width: 720px) {
+  .header { height: 58px; }
+  .telemetry { display: none; }
+  .plate-nav { padding: 0; }
+  .plate { min-width: 140px; }
+  .workspace { padding-bottom: 104px; }
 }
