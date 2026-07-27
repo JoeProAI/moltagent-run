@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Rocket, RefreshCw, Trash2, Copy, Check, ExternalLink, KeyRound, BookOpen } from 'lucide-react';
+import { Rocket, RefreshCw, Trash2, Copy, Check, ExternalLink, KeyRound, BookOpen, ShieldCheck, TimerReset, Layers3, ScanLine } from 'lucide-react';
 import { auth, signInAnonymously, onAuthStateChanged } from '../../firebase';
 
 // S6 — Outpost Launcher. Two tiers:
@@ -127,27 +127,43 @@ export DEVIN_OUTPOST_TOKEN="your_outpost_token_here"
     return <span className="badge">{state || 'pending'}</span>;
   };
 
-  return (
-    <div className="module">
+  const launchReady = gatewayState === 'ready' && snapshotConfigured;
+  const launchState = launchReady ? 'Ready to provision' : snapshotConfigured ? 'Control path unavailable' : 'Runtime image pending';
 
-      <div className="masthead">
+  return (
+    <div className="module outpost-atelier">
+
+      <div className="masthead atelier-masthead">
         <div>
-          <div className="masthead-eyebrow">S6 · Outpost launcher</div>
-          <h2 className="masthead-title">Spin up a Devin outpost sandbox in one click</h2>
+          <div className="masthead-eyebrow">PRIVATE OPERATIONS · DAYTONA</div>
+          <h2 className="masthead-title">A controlled place to put Devin to work.</h2>
           <p className="masthead-sub">
-            Hosted Daytona sandboxes, no Daytona account needed — capped per user, auto-stopped
-            when idle, auto-deleted after two hours. Bring your own Devin outpost token and the
-            sandbox registers into your org; the token is used once and never stored.
+            Inspect every runtime before it exists: the snapshot it inherits, the boundary it obeys,
+            and the policy that removes it. This is your private compute floor, not a public faucet.
           </p>
         </div>
-        <div className="masthead-actions">
-          {gatewayState === 'ready' && <span className="badge ok">Gateway online</span>}
-          {gatewayState === 'offline' && <span className="badge">Gateway offline</span>}
-          {gatewayState === 'unauthed' && <span className="badge">Session required</span>}
+        <div className={`atelier-state atelier-state-${launchReady ? 'ready' : 'locked'}`}>
+          <span>PROVISIONING</span>
+          <strong>{launchState}</strong>
+          <small>{outposts.length} active runtime{outposts.length === 1 ? '' : 's'}</small>
         </div>
       </div>
 
-      <div className="grid cols-main-side">
+      <section className="atelier-instrument" aria-label="Outpost launch boundary">
+        <div className="atelier-instrument-copy">
+          <span className="atelier-kicker">OUTPOST / 01</span>
+          <h3>Every runtime leaves a receipt.</h3>
+          <p>Snapshot, isolation boundary, idle stop, deletion horizon. The lifecycle is visible before you create compute.</p>
+        </div>
+        <dl className="atelier-policy-grid">
+          <div><dt><Layers3 size={15} /> Runtime image</dt><dd>{snapshotConfigured ? 'Registered snapshot' : 'Not registered'}</dd></div>
+          <div><dt><TimerReset size={15} /> Idle policy</dt><dd>15 min stop · 2 h delete</dd></div>
+          <div><dt><ShieldCheck size={15} /> Access boundary</dt><dd>Private session only</dd></div>
+          <div><dt><ScanLine size={15} /> Fleet state</dt><dd>{gatewayState === 'ready' ? 'Gateway responding' : 'Awaiting control path'}</dd></div>
+        </dl>
+      </section>
+
+      <div className="grid cols-main-side atelier-grid">
 
         <div className="stack">
           {!snapshotConfigured && gatewayState === 'ready' && (
@@ -164,17 +180,23 @@ export DEVIN_OUTPOST_TOKEN="your_outpost_token_here"
           )}
 
           {/* Hosted launcher */}
-          <div className="panel">
+          <div className="panel atelier-launch-panel">
             <div className="panel-head">
               <div className="panel-title">
                 <Rocket size={15} />
-                Launch a hosted sandbox
+                Prepare a private runtime
               </div>
-              <span className="panel-note">{snapshotConfigured ? 'Runs on @JoePro’s Daytona org · capped + auto-expiring' : 'Private validation · registered snapshot required'}</span>
+              <span className="panel-note">{snapshotConfigured ? 'JoePro Daytona org · capped + auto-expiring' : 'Private validation · registered snapshot required'}</span>
+            </div>
+
+            <div className="atelier-launch-ledger" aria-label="Launch receipt preview">
+              <span>OWNER</span><strong>JOEPRO AI</strong>
+              <span>SNAPSHOT</span><strong>{snapshotConfigured ? 'REGISTERED' : 'PENDING'}</strong>
+              <span>REMOVAL</span><strong>02:00 AFTER CREATION</strong>
             </div>
 
             <label className="field-label" htmlFor="devin-token">
-              Devin outpost token — optional, routes the outpost into your org
+              Devin Outpost token · optional
             </label>
             <input
               id="devin-token"
@@ -212,9 +234,9 @@ export DEVIN_OUTPOST_TOKEN="your_outpost_token_here"
           </div>
 
           {/* Fleet */}
-          <div className="panel sunken">
+          <div className="panel sunken atelier-fleet-panel">
             <div className="panel-head">
-              <div className="panel-title">Your outposts</div>
+              <div className="panel-title">Runtime ledger</div>
               <button type="button" className="btn quiet" onClick={refresh} disabled={gatewayState !== 'ready'}>
                 <RefreshCw size={14} />
                 Refresh
@@ -224,20 +246,20 @@ export DEVIN_OUTPOST_TOKEN="your_outpost_token_here"
             {outposts.length === 0 && (
               <p className="panel-sub" style={{ marginBottom: 0 }}>
                 {gatewayState === 'ready'
-                  ? 'No active outposts. Launch one above — it appears here with live state.'
-                  : 'The fleet list appears once the gateway is online.'}
+                  ? 'No active runtimes. When you launch one, its full lifecycle receipt appears here.'
+                  : 'The runtime ledger becomes available when the private control path responds.'}
               </p>
             )}
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-2)' }}>
               {outposts.map((outpost) => (
-                <div key={outpost.id} className="roster-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--sp-3)' }}>
+                <div key={outpost.id} className="roster-row atelier-runtime-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--sp-3)' }}>
                   <div style={{ minWidth: 0 }}>
                     <div className="roster-name" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {outpost.id}
                     </div>
                     <div className="roster-role">
-                      {outpost.snapshot ? `snapshot: ${outpost.snapshot}` : 'base image'} · stops after {outpost.autoStopInterval}m idle
+                      {outpost.snapshot ? `snapshot: ${outpost.snapshot}` : 'base image'} · idle stop {outpost.autoStopInterval}m · removal {outpost.autoDeleteInterval}m
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-2)', flexShrink: 0 }}>
@@ -260,16 +282,18 @@ export DEVIN_OUTPOST_TOKEN="your_outpost_token_here"
 
         {/* BYO tier */}
         <div className="stack">
-          <div className="panel">
+          <div className="panel atelier-guest-panel">
             <div className="panel-head">
               <div className="panel-title">
                 <KeyRound size={15} />
-                Bring your own org
+                Future guest lane
               </div>
+              <span className="panel-note">Closed by policy</span>
             </div>
             <p className="panel-sub">
-              Fully non-invasive: your Daytona org, your Devin Enterprise outpost token, nothing
-              touches this site. Copy the scaffold, fill your keys locally, follow the official guide.
+              Guest compute will be useful only when it is non-invasive: a dedicated minimal snapshot,
+              named access, fixed lifecycle limits, and an immediate shutdown path. Until then, use your
+              own Daytona org and keep every credential in your environment.
             </p>
 
             <pre className="codeblock" style={{ maxHeight: '220px', fontSize: '0.66rem' }}><code>{byoSnippet}</code></pre>
@@ -302,13 +326,13 @@ export DEVIN_OUTPOST_TOKEN="your_outpost_token_here"
             </div>
           </div>
 
-          <div className="panel sunken">
-            <div className="panel-title" style={{ marginBottom: 'var(--sp-2)' }}>How the hosted tier works</div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.68rem', color: 'var(--frost-2)', lineHeight: 1.8 }}>
-              <div>1. Your session signs the request — no Daytona key on your side</div>
-              <div>2. Gateway creates a labeled sandbox in Joe's org</div>
-              <div>3. Your outpost token (if given) is injected once, never stored</div>
-              <div>4. Idle sandboxes stop themselves; all delete within 2 h</div>
+          <div className="panel sunken atelier-boundary-panel">
+            <div className="panel-title" style={{ marginBottom: 'var(--sp-2)' }}>What stays true when guests arrive</div>
+            <div className="atelier-boundary-list">
+              <div><span>01</span><p>Access is named, revocable, and never anonymous-by-default.</p></div>
+              <div><span>02</span><p>Each runtime starts clean with no JoePro workspace, memory, or credentials.</p></div>
+              <div><span>03</span><p>Global limits and a single operator kill switch outrank convenience.</p></div>
+              <div><span>04</span><p>Every compute session ends with a lifecycle receipt and automatic cleanup.</p></div>
             </div>
           </div>
         </div>

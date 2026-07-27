@@ -1366,10 +1366,56 @@ input[type='range'] {
 .guide-hero::before { background: linear-gradient(125deg, transparent 14%, rgba(220, 174, 85, 0.1) 14.1%, transparent 14.3%); }
 .guide-panel-primary { background: linear-gradient(150deg, rgba(167, 198, 154, 0.12), var(--ink-1) 52%); }
 .guide-footnote { background: rgba(167, 198, 154, 0.07); }
+.guide-access-ladder { display: grid; grid-template-columns: minmax(210px, 0.7fr) minmax(0, 1.3fr); gap: var(--sp-5); padding: clamp(20px, 3vw, 32px); border: 1px solid var(--seam-strong); background: linear-gradient(135deg, rgba(220, 174, 85, 0.08), transparent 42%), var(--ink-1); }
+.guide-access-ladder h3 { margin-top: var(--sp-2); max-width: 14ch; font-size: 1.35rem; line-height: 1.05; letter-spacing: -0.035em; }
+.guide-access-ladder ol { display: grid; grid-template-columns: repeat(3, 1fr); list-style: none; border-left: 1px solid var(--seam); }
+.guide-access-ladder li { padding: 2px var(--sp-4) 0; border-right: 1px solid var(--seam); }
+.guide-access-ladder span { display: block; margin-bottom: var(--sp-4); color: var(--amber); font: 0.6rem var(--font-mono); letter-spacing: 0.12em; }
+.guide-access-ladder strong { display: block; color: var(--frost); font-size: 0.85rem; }
+.guide-access-ladder p { margin-top: var(--sp-2); color: var(--frost-2); font-size: 0.73rem; line-height: 1.6; }
+
+.atelier-masthead { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: var(--sp-6); }
+.atelier-state { min-width: 220px; display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border: 1px solid var(--seam-strong); background: rgba(5, 7, 5, 0.7); font-family: var(--font-mono); }
+.atelier-state span, .atelier-state small { color: var(--frost-3); font-size: 0.6rem; letter-spacing: 0.11em; }
+.atelier-state strong { font-size: 0.76rem; letter-spacing: 0.03em; font-weight: 500; }
+.atelier-state-ready { border-color: rgba(156, 207, 116, 0.75); }
+.atelier-state-ready strong { color: var(--ok); }
+.atelier-state-locked strong { color: var(--amber); }
+.atelier-instrument { display: grid; grid-template-columns: minmax(250px, 0.8fr) minmax(0, 1.2fr); gap: var(--sp-5); border: 1px solid var(--seam-strong); padding: clamp(20px, 3vw, 36px); background: linear-gradient(125deg, rgba(167, 198, 154, 0.08), transparent 38%), linear-gradient(180deg, rgba(27, 32, 25, 0.92), rgba(10, 12, 10, 0.97)); position: relative; overflow: hidden; }
+.atelier-instrument::after { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0.25; background: repeating-linear-gradient(90deg, transparent 0 39px, rgba(240, 240, 223, 0.04) 40px); }
+.atelier-instrument-copy, .atelier-policy-grid { position: relative; z-index: 1; }
+.atelier-kicker { color: var(--amber); font: 0.64rem var(--font-mono); letter-spacing: 0.16em; }
+.atelier-instrument h3 { margin: 12px 0 10px; max-width: 13ch; font-size: clamp(1.45rem, 2.5vw, 2.3rem); line-height: 1; letter-spacing: -0.045em; }
+.atelier-instrument p { max-width: 40ch; color: var(--frost-2); font-size: 0.8rem; line-height: 1.65; }
+.atelier-policy-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--seam); border-left: 1px solid var(--seam); }
+.atelier-policy-grid div { min-height: 102px; display: flex; flex-direction: column; justify-content: space-between; gap: 16px; padding: 14px; border-right: 1px solid var(--seam); border-bottom: 1px solid var(--seam); background: rgba(5, 7, 5, 0.28); }
+.atelier-policy-grid dt { display: flex; align-items: center; gap: 7px; color: var(--frost-3); font: 0.57rem var(--font-mono); letter-spacing: 0.09em; text-transform: uppercase; }
+.atelier-policy-grid dt svg { color: var(--ice); }
+.atelier-policy-grid dd { color: var(--frost); font: 0.7rem var(--font-mono); letter-spacing: 0.02em; }
+.atelier-grid { grid-template-columns: minmax(0, 1fr) 320px; align-items: start; }
+.atelier-grid > * { min-width: 0; }
+.atelier-launch-panel .field { width: 100%; }
+.atelier-launch-panel { background: linear-gradient(150deg, rgba(220, 174, 85, 0.09), rgba(14, 17, 13, 0.96) 45%); }
+.atelier-launch-ledger { display: grid; grid-template-columns: max-content 1fr; gap: 8px 14px; margin: 0 0 var(--sp-4); padding: 13px 0; border-top: 1px solid var(--seam); border-bottom: 1px solid var(--seam); font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.07em; }
+.atelier-launch-ledger span { color: var(--frost-3); }
+.atelier-launch-ledger strong { color: var(--frost-2); font-weight: 500; }
+.atelier-fleet-panel { min-height: 240px; }
+.atelier-runtime-row { position: relative; overflow: hidden; }
+.atelier-runtime-row::after { content: 'RECEIPT'; position: absolute; right: 12px; top: 12px; color: rgba(240, 240, 223, 0.06); font: 0.6rem var(--font-mono); letter-spacing: 0.13em; }
+.atelier-guest-panel { border-style: dashed; }
+.atelier-boundary-panel { background: linear-gradient(135deg, rgba(167, 198, 154, 0.06), rgba(5, 7, 5, 0.64)); }
+.atelier-boundary-list { display: grid; gap: 11px; }
+.atelier-boundary-list div { display: grid; grid-template-columns: 30px 1fr; gap: 10px; align-items: start; }
+.atelier-boundary-list span { color: var(--amber); font: 0.62rem var(--font-mono); }
+.atelier-boundary-list p { color: var(--frost-2); font-size: 0.74rem; line-height: 1.5; }
 
 @media (max-width: 900px) {
-  .command-masthead { align-items: flex-start; flex-direction: column; }
-  .command-readout { width: 100%; max-width: 340px; }
+  .command-masthead, .atelier-masthead { align-items: flex-start; grid-template-columns: 1fr; }
+  .command-readout, .atelier-state { width: 100%; max-width: 340px; }
+  .atelier-instrument, .atelier-grid, .guide-access-ladder { grid-template-columns: 1fr; }
+  .guide-access-ladder ol { grid-template-columns: 1fr; border-top: 1px solid var(--seam); border-left: none; }
+  .guide-access-ladder li { padding: var(--sp-3) 0; border-right: none; border-bottom: 1px solid var(--seam); }
+  .guide-access-ladder li:last-child { border-bottom: none; }
 }
 
 @media (max-width: 720px) {
@@ -1378,4 +1424,7 @@ input[type='range'] {
   .plate-nav { padding: 0; }
   .plate { min-width: 140px; }
   .workspace { padding-bottom: 104px; }
+  .atelier-instrument { padding: var(--sp-5); }
+  .atelier-policy-grid { grid-template-columns: 1fr; }
+  .atelier-policy-grid div { min-height: 80px; }
 }

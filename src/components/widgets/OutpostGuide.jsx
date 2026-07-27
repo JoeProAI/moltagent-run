@@ -98,6 +98,18 @@ export default function OutpostGuide({ onNavigate }) {
         </ol>
       </section>
 
+      <section className="guide-access-ladder" aria-label="Guest access roadmap">
+        <div>
+          <div className="masthead-eyebrow">ACCESS LADDER</div>
+          <h3>Earned access, not an open compute tap.</h3>
+        </div>
+        <ol>
+          <li><span>NOW</span><strong>Private operator</strong><p>Joe controls the snapshot, runtime, and all lifecycle decisions.</p></li>
+          <li><span>NEXT</span><strong>Trusted guests</strong><p>Named accounts, fixed limits, dedicated guest image, and operator kill switch.</p></li>
+          <li><span>ALWAYS</span><strong>Bring your own org</strong><p>Your Daytona, your billing, your boundary. MoltAgent provides the recipe.</p></li>
+        </ol>
+      </section>
+
       <section className="guide-footnote">
         <ShieldCheck size={17} />
         <p><strong>Use this for:</strong> isolated coding tasks, controlled repository access, repeatable agent environments. <strong>Not for:</strong> bypassing Devin ACUs, storing long-lived secrets in an image, or running a public sandbox faucet without billing and abuse controls.</p>

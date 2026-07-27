@@ -12,6 +12,7 @@ import { Daytona } from '@daytonaio/sdk';
 //      OUTPOST_MAX_PER_USER (default 2)
 //      OUTPOST_AUTO_STOP_MIN (default 15)
 //      OUTPOST_AUTO_DELETE_MIN (default 120)
+//      OUTPOST_PRIVATE_MODE (default true) and OUTPOST_OPERATOR_UIDS (required while private)
 export const config = { maxDuration: 60 };
 
 const OWNER_LABEL = 'moltagent-owner';
@@ -67,6 +68,18 @@ export default async function handler(req, res) {
   const uid = await verifyUser(req);
   if (!uid) {
     return res.status(401).json({ success: false, message: 'Sign-in required (invalid or missing session token).' });
+  }
+
+  const operatorUids = (process.env.OUTPOST_OPERATOR_UIDS || '')
+    .split(',')
+    .map((operatorUid) => operatorUid.trim())
+    .filter(Boolean);
+  if (process.env.OUTPOST_PRIVATE_MODE !== 'false' && !operatorUids.includes(uid)) {
+    return res.status(403).json({
+      success: false,
+      error: 'PRIVATE_OPERATOR_ONLY',
+      message: 'Private operator mode is active. Add this browser UID to OUTPOST_OPERATOR_UIDS before enabling managed launches.'
+    });
   }
 
   const daytona = new Daytona({ apiKey: process.env.DAYTONA_API_KEY });
