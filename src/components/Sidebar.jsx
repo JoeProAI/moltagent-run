@@ -3,10 +3,11 @@
 export default function Sidebar({ activeWidget, setActiveWidget, setConstellation }) {
   const plates = [
     { id: 'home', num: '01', label: 'HOME', role: 'Start here', mode: 'research' },
-    { id: 'bridge', num: '02', label: 'OUTPOSTS', role: 'Real Daytona sandboxes', mode: 'research' },
-    { id: 'mecha-run', num: '03', label: 'DEBATE', role: 'Four Grok agents argue it', mode: 'mecha-party' },
-    { id: 'x-growth', num: '04', label: 'STUDIO', role: 'X hooks & threads', mode: 'x-growth' },
-    { id: 'lab', num: '05', label: 'LAB', role: 'Concept demos', mode: 'cinematic' },
+    { id: 'guide', num: '02', label: 'GUIDE', role: 'Devin Outposts field manual', mode: 'research' },
+    { id: 'bridge', num: '03', label: 'OUTPOSTS', role: 'Private sandbox validation', mode: 'research' },
+    { id: 'mecha-run', num: '04', label: 'DEBATE', role: 'Four Grok agents argue it', mode: 'mecha-party' },
+    { id: 'x-growth', num: '05', label: 'STUDIO', role: 'X hooks & threads', mode: 'x-growth' },
+    { id: 'lab', num: '06', label: 'LAB', role: 'Concept demos', mode: 'cinematic' },
   ];
 
   return (

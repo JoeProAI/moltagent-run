@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Rocket, RefreshCw, Trash2, Copy, Check, ExternalLink, KeyRound } from 'lucide-react';
+import { Rocket, RefreshCw, Trash2, Copy, Check, ExternalLink, KeyRound, BookOpen } from 'lucide-react';
 import { auth, signInAnonymously, onAuthStateChanged } from '../../firebase';
 
 // S6 — Outpost Launcher. Two tiers:
@@ -8,11 +8,12 @@ import { auth, signInAnonymously, onAuthStateChanged } from '../../firebase';
 //  BYO:    pre-filled setup for people bringing their own Daytona + Devin org —
 //          nothing touches this server at all.
 // The launcher bootstraps its own anonymous session — App doesn't need to.
-export default function NOESISBridge() {
+export default function NOESISBridge({ onNavigate }) {
   const [sessionUser, setSessionUser] = useState(null);
   const [outposts, setOutposts] = useState([]);
   const [gatewayState, setGatewayState] = useState('loading'); // loading | ready | offline | unauthed
   const [gatewayMessage, setGatewayMessage] = useState('');
+  const [snapshotConfigured, setSnapshotConfigured] = useState(false);
   const [devinToken, setDevinToken] = useState('');
   const [isLaunching, setIsLaunching] = useState(false);
   const [busyId, setBusyId] = useState(null);
@@ -60,6 +61,7 @@ export default function NOESISBridge() {
       if (result.success) {
         setGatewayState('ready');
         setOutposts(result.outposts);
+        setSnapshotConfigured(Boolean(result.snapshotConfigured));
       }
     } catch {
       setGatewayState('offline');
@@ -148,6 +150,19 @@ export DEVIN_OUTPOST_TOKEN="your_outpost_token_here"
       <div className="grid cols-main-side">
 
         <div className="stack">
+          {!snapshotConfigured && gatewayState === 'ready' && (
+            <div className="guide-callout">
+              <KeyRound size={18} />
+              <div>
+                <strong>Snapshot required before hosted launch.</strong>
+                <span> Build and register a Devin Outpost snapshot first. The guide has the exact runbook.</span>
+              </div>
+              <button type="button" className="btn quiet" onClick={() => onNavigate?.('guide')}>
+                <BookOpen size={14} /> Open guide
+              </button>
+            </div>
+          )}
+
           {/* Hosted launcher */}
           <div className="panel">
             <div className="panel-head">
@@ -155,7 +170,7 @@ export DEVIN_OUTPOST_TOKEN="your_outpost_token_here"
                 <Rocket size={15} />
                 Launch a hosted sandbox
               </div>
-              <span className="panel-note">Runs on @JoePro's Daytona org · capped + auto-expiring</span>
+              <span className="panel-note">{snapshotConfigured ? 'Runs on @JoePro’s Daytona org · capped + auto-expiring' : 'Private validation · registered snapshot required'}</span>
             </div>
 
             <label className="field-label" htmlFor="devin-token">
@@ -165,25 +180,25 @@ export DEVIN_OUTPOST_TOKEN="your_outpost_token_here"
               id="devin-token"
               type="password"
               className="field"
-              placeholder="Paste your Cognition outpost token (kept in memory, never stored)"
+              placeholder={snapshotConfigured ? 'Paste your Cognition outpost token (kept in memory, never stored)' : 'Complete the snapshot runbook first'}
               value={devinToken}
               onChange={(e) => setDevinToken(e.target.value)}
-              disabled={gatewayState !== 'ready'}
+              disabled={gatewayState !== 'ready' || !snapshotConfigured}
             />
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 'var(--sp-3)', marginTop: 'var(--sp-3)', flexWrap: 'wrap' }}>
               <span className="btn-hint" style={{ textAlign: 'left' }}>
-                Auto-stops after 15 min idle · auto-deletes after 2 h · 2 per user
+                {snapshotConfigured ? 'Auto-stops after 15 min idle · auto-deletes after 2 h · 2 per user' : 'Launch stays locked until DAYTONA_SNAPSHOT is set'}
               </span>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
                 <button
                   type="button"
                   className="btn primary"
                   onClick={handleLaunch}
-                  disabled={isLaunching || gatewayState !== 'ready'}
+                  disabled={isLaunching || gatewayState !== 'ready' || !snapshotConfigured}
                 >
                   {isLaunching ? <RefreshCw size={14} className="spin" /> : <Rocket size={14} />}
-                  {isLaunching ? 'Provisioning…' : 'Launch outpost sandbox'}
+                  {isLaunching ? 'Provisioning…' : snapshotConfigured ? 'Launch outpost sandbox' : 'Snapshot required'}
                 </button>
                 <span className="btn-hint">Creates a real Daytona sandbox for your session</span>
               </div>

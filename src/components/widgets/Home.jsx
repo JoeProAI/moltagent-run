@@ -24,13 +24,13 @@ export default function Home({ onNavigate }) {
 
   const tools = [
     {
-      id: 'bridge',
+      id: 'guide',
       icon: <Rocket size={18} />,
-      name: 'Outposts',
-      what: 'Spin up a real Daytona cloud sandbox in one click — capped, auto-expiring, no Daytona account needed. Bring a Devin outpost token and it registers into your org.',
-      how: 'Click Launch. Your sandbox appears in the fleet list with live state.',
-      badge: liveBadge(status?.daytona, 'DAYTONA_API_KEY'),
-      cta: 'Launch an outpost'
+      name: 'Devin Outposts',
+      what: 'A field manual for running Devin on Daytona infrastructure you control. Start here before launching a sandbox.',
+      how: 'Learn the credentials, snapshot, runtime, and validation path.',
+      badge: <span className="badge">Setup guide</span>,
+      cta: 'Open the guide'
     },
     {
       id: 'mecha-run',

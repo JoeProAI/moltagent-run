@@ -74,10 +74,22 @@ export default async function handler(req, res) {
   try {
     if (req.method === 'GET') {
       const sandboxes = await listOwn(daytona, uid);
-      return res.status(200).json({ success: true, outposts: sandboxes.map(publicView) });
+      return res.status(200).json({
+        success: true,
+        outposts: sandboxes.map(publicView),
+        snapshotConfigured: Boolean(process.env.DAYTONA_SNAPSHOT)
+      });
     }
 
     if (req.method === 'POST') {
+      if (!process.env.DAYTONA_SNAPSHOT) {
+        return res.status(503).json({
+          success: false,
+          error: 'SNAPSHOT_REQUIRED',
+          message: 'Hosted provisioning is in private validation. A registered Devin Outpost snapshot is required before launch.'
+        });
+      }
+
       const maxPerUser = Number(process.env.OUTPOST_MAX_PER_USER) || 2;
       const existing = await listOwn(daytona, uid);
       if (existing.length >= maxPerUser) {

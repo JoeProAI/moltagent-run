@@ -7,6 +7,7 @@ import Lab from './components/widgets/Lab';
 import MechaRun from './components/widgets/MechaRun';
 import XGrowth from './components/widgets/XGrowth';
 import NOESISBridge from './components/widgets/NOESISBridge';
+import OutpostGuide from './components/widgets/OutpostGuide';
 
 const Canvas3D = lazy(() => import('./components/Canvas3D'));
 
@@ -21,6 +22,7 @@ function App() {
     const map = {
       'home': 'research',
       'bridge': 'research',
+      'guide': 'research',
       'mecha-run': 'mecha-party',
       'x-growth': 'x-growth',
       'lab': 'cinematic',
@@ -81,7 +83,10 @@ function App() {
             <Home onNavigate={setActiveWidget} />
           )}
           {activeWidget === 'bridge' && (
-            <NOESISBridge />
+            <NOESISBridge onNavigate={setActiveWidget} />
+          )}
+          {activeWidget === 'guide' && (
+            <OutpostGuide onNavigate={setActiveWidget} />
           )}
           {activeWidget === 'mecha-run' && (
             <MechaRun setActiveAgents={setActiveAgents} />
