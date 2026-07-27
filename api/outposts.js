@@ -147,6 +147,8 @@ export default async function handler(req, res) {
 
     return res.status(405).json({ success: false, message: 'GET, POST, or DELETE only' });
   } catch (err) {
-    return res.status(502).json({ success: false, message: `Daytona error: ${err.message}` });
+    const message = err instanceof Error ? err.message : String(err);
+    console.error('MoltAgent Outposts provisioning failed', { method: req.method, message });
+    return res.status(502).json({ success: false, message: `Daytona error: ${message}` });
   }
 }
