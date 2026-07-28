@@ -5,9 +5,7 @@ export default function Sidebar({ activeWidget, setActiveWidget, setConstellatio
     { id: 'home', num: '01', label: 'COMMAND', role: 'System overview', mode: 'research' },
     { id: 'guide', num: '02', label: 'FIELD GUIDE', role: 'Devin Outposts manual', mode: 'research' },
     { id: 'bridge', num: '03', label: 'OUTPOSTS', role: 'Sandbox control', mode: 'research' },
-    { id: 'mecha-run', num: '04', label: 'DEBATE', role: 'Decision cell', mode: 'mecha-party' },
-    { id: 'x-growth', num: '05', label: 'SIGNALS', role: 'X writing studio', mode: 'x-growth' },
-    { id: 'lab', num: '06', label: 'PROVING GROUND', role: 'Concept systems', mode: 'cinematic' },
+    { id: 'lab', num: '04', label: 'PROVING GROUND', role: 'Concept systems', mode: 'cinematic' },
   ];
 
   return (

@@ -1,39 +1,8 @@
-import { useState, useEffect } from 'react';
-import { ArrowRight, BookOpen, ExternalLink, MessageSquareText, PenLine, Server, ShieldCheck } from 'lucide-react';
+import { ArrowRight, BookOpen, ExternalLink, Server, ShieldCheck } from 'lucide-react';
 
 // Home — the front door. Says what the site does in plain words, shows which
 // tools are live (from /api/status, booleans only), and routes with one click.
 export default function Home({ onNavigate }) {
-  const [status, setStatus] = useState(null);
-
-  useEffect(() => {
-    /* eslint-disable react-hooks/set-state-in-effect -- async fetch */
-    fetch('/api/status')
-      .then(r => r.json())
-      .then(setStatus)
-      .catch(() => setStatus({}));
-    /* eslint-enable react-hooks/set-state-in-effect */
-  }, []);
-
-  const tools = [
-    {
-      id: 'mecha-run',
-      icon: <MessageSquareText size={17} />,
-      name: 'Decision cell',
-      body: 'Four Grok roles plan, research, attack, and decide an engineering task.',
-      cta: 'Open Debate',
-      available: Boolean(status?.grok),
-    },
-    {
-      id: 'x-growth',
-      icon: <PenLine size={17} />,
-      name: 'Signals studio',
-      body: 'Draft and rank X hooks, then turn a strong idea into a working thread.',
-      cta: 'Open Signals',
-      available: Boolean(status?.grok || status?.claude),
-    },
-  ];
-
   return (
     <div className="module outpost-command">
       <section className="outpost-command-hero">
@@ -126,27 +95,6 @@ export default function Home({ onNavigate }) {
         </article>
       </section>
 
-      <section className="outpost-secondary-tools" aria-label="Other MoltAgent tools">
-        <div className="outpost-secondary-head">
-          <div className="masthead-eyebrow">OTHER CELLS</div>
-          <p>Outposts are the core. These tools support the work around them.</p>
-        </div>
-        <div className="outpost-secondary-grid">
-          {tools.map(tool => (
-            <article key={tool.id} className="outpost-secondary-card">
-              <div className="outpost-secondary-card-head">
-                <span>{tool.icon}</span>
-                <span className={`badge ${tool.available ? 'ok' : ''}`}>{tool.available ? 'Configured' : 'Not configured'}</span>
-              </div>
-              <h3>{tool.name}</h3>
-              <p>{tool.body}</p>
-              <button type="button" className="btn quiet" onClick={() => onNavigate(tool.id)}>
-                {tool.cta} <ArrowRight size={14} />
-              </button>
-            </article>
-          ))}
-        </div>
-      </section>
     </div>
   );
 }
