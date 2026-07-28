@@ -67,7 +67,7 @@ export default function Home({ onNavigate }) {
             <div><dt>IDLE STOP</dt><dd>10 minutes</dd></div>
             <div><dt>DELETION</dt><dd>60 minutes or manual</dd></div>
           </dl>
-          <p>First runtime launched, inspected, stopped by policy, then independently deleted through the ledger.</p>
+          <p>One runtime launched, inspected, and stopped by policy. A second runtime was inspected with Computer Use and manually deleted through the control API.</p>
         </aside>
       </section>
 
