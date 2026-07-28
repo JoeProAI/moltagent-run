@@ -8,12 +8,44 @@ import { auth, signInAnonymously, onAuthStateChanged } from '../../firebase';
 //  BYO:    pre-filled setup for people bringing their own Daytona + Devin org —
 //          nothing touches this server at all.
 // The launcher bootstraps its own anonymous session — App doesn't need to.
+function PublicAccess({ autoStopInterval, autoDeleteInterval, onNavigate }) {
+  return (
+    <section className="public-access-panel" aria-label="Outposts access options">
+      <div className="public-access-mark">
+        <ShieldCheck size={18} />
+        <span>HOSTED ACCESS · PRIVATE VALIDATION</span>
+      </div>
+      <h3>You can inspect the system. You can&rsquo;t spend its compute yet.</h3>
+      <p>
+        MoltAgent is proving the full lifecycle first: a clean snapshot, an isolated runtime,
+        a visible ledger, and automatic cleanup. Hosted launches open only after that policy is
+        ready for named trusted guests.
+      </p>
+      <dl className="public-access-policy">
+        <div><dt><Layers3 size={15} /> Runtime</dt><dd>Clean registered snapshot</dd></div>
+        <div><dt><TimerReset size={15} /> Lifecycle</dt><dd>{autoStopInterval} min idle stop · {autoDeleteInterval} min deletion</dd></div>
+        <div><dt><KeyRound size={15} /> Access</dt><dd>Named invite required</dd></div>
+      </dl>
+      <div className="public-access-actions">
+        <button type="button" className="btn primary" onClick={() => onNavigate?.('guide')}>
+          <BookOpen size={14} /> Read the field guide
+        </button>
+        <a className="btn quiet" href="https://www.daytona.io/docs/en/guides/devin/devin-outposts/" target="_blank" rel="noreferrer">
+          <ExternalLink size={14} /> Run on your own Daytona
+        </a>
+      </div>
+      <p className="public-access-note">Want trusted access when the invite lane opens? Follow the build and reply to the launch post. No API key or browser token is ever requested here.</p>
+    </section>
+  );
+}
+
 export default function NOESISBridge({ onNavigate }) {
   const [sessionUser, setSessionUser] = useState(null);
   const [outposts, setOutposts] = useState([]);
   const [gatewayState, setGatewayState] = useState('loading'); // loading | ready | offline | unauthed | private
   const [gatewayMessage, setGatewayMessage] = useState('');
   const [snapshotConfigured, setSnapshotConfigured] = useState(false);
+  const [lifecycle, setLifecycle] = useState({ autoStopInterval: 15, autoDeleteInterval: 120 });
   const [devinToken, setDevinToken] = useState('');
   const [isLaunching, setIsLaunching] = useState(false);
   const [busyId, setBusyId] = useState(null);
@@ -61,13 +93,21 @@ export default function NOESISBridge({ onNavigate }) {
       if (status === 403) {
         setGatewayState('private');
         setSnapshotConfigured(Boolean(result.snapshotConfigured));
-        setGatewayMessage(result.message || 'This browser is not authorized for private Outposts access.');
+        setLifecycle({
+          autoStopInterval: result.autoStopInterval || 15,
+          autoDeleteInterval: result.autoDeleteInterval || 120,
+        });
+        setGatewayMessage(result.message || 'Hosted provisioning is private while the operator validates lifecycle and cost controls.');
         return;
       }
       if (result.success) {
         setGatewayState('ready');
         setOutposts(result.outposts);
         setSnapshotConfigured(Boolean(result.snapshotConfigured));
+        setLifecycle({
+          autoStopInterval: result.autoStopInterval || 15,
+          autoDeleteInterval: result.autoDeleteInterval || 120,
+        });
       }
     } catch {
       setGatewayState('offline');
@@ -163,7 +203,7 @@ export DEVIN_OUTPOST_TOKEN="your_outpost_token_here"
         </div>
         <dl className="atelier-policy-grid">
           <div><dt><Layers3 size={15} /> Runtime image</dt><dd>{snapshotConfigured ? 'Registered snapshot' : 'Not registered'}</dd></div>
-          <div><dt><TimerReset size={15} /> Idle policy</dt><dd>15 min stop · 2 h delete</dd></div>
+          <div><dt><TimerReset size={15} /> Idle policy</dt><dd>{lifecycle.autoStopInterval} min stop · {lifecycle.autoDeleteInterval} min delete</dd></div>
           <div><dt><ShieldCheck size={15} /> Access boundary</dt><dd>Private session only</dd></div>
           <div><dt><ScanLine size={15} /> Fleet state</dt><dd>{gatewayState === 'ready' ? 'Gateway responding' : 'Awaiting control path'}</dd></div>
         </dl>
@@ -172,6 +212,14 @@ export DEVIN_OUTPOST_TOKEN="your_outpost_token_here"
       <div className="grid cols-main-side atelier-grid">
 
         <div className="stack">
+          {gatewayState === 'private' ? (
+            <PublicAccess
+              autoStopInterval={lifecycle.autoStopInterval}
+              autoDeleteInterval={lifecycle.autoDeleteInterval}
+              onNavigate={onNavigate}
+            />
+          ) : (
+            <>
           {!snapshotConfigured && gatewayState === 'ready' && (
             <div className="guide-callout">
               <KeyRound size={18} />
@@ -216,7 +264,7 @@ export DEVIN_OUTPOST_TOKEN="your_outpost_token_here"
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 'var(--sp-3)', marginTop: 'var(--sp-3)', flexWrap: 'wrap' }}>
               <span className="btn-hint" style={{ textAlign: 'left' }}>
-                {snapshotConfigured ? 'Auto-stops after 15 min idle · auto-deletes after 2 h · 2 per user' : 'Launch stays locked until DAYTONA_SNAPSHOT is set'}
+                {snapshotConfigured ? `Auto-stops after ${lifecycle.autoStopInterval} min idle · auto-deletes after ${lifecycle.autoDeleteInterval} min · 2 per user` : 'Launch stays locked until DAYTONA_SNAPSHOT is set'}
               </span>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
                 <button
@@ -284,6 +332,8 @@ export DEVIN_OUTPOST_TOKEN="your_outpost_token_here"
               ))}
             </div>
           </div>
+            </>
+          )}
         </div>
 
         {/* BYO tier */}

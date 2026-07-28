@@ -78,8 +78,10 @@ export default async function handler(req, res) {
     return res.status(403).json({
       success: false,
       error: 'PRIVATE_OPERATOR_ONLY',
-      message: 'Private operator mode is active. Add this browser UID to OUTPOST_OPERATOR_UIDS before enabling managed launches.',
+      message: 'Hosted provisioning is private while the operator validates lifecycle and cost controls.',
       snapshotConfigured: Boolean(process.env.DAYTONA_SNAPSHOT),
+      autoStopInterval: Number(process.env.OUTPOST_AUTO_STOP_MIN) || 15,
+      autoDeleteInterval: Number(process.env.OUTPOST_AUTO_DELETE_MIN) || 120,
     });
   }
 
@@ -91,7 +93,9 @@ export default async function handler(req, res) {
       return res.status(200).json({
         success: true,
         outposts: sandboxes.map(publicView),
-        snapshotConfigured: Boolean(process.env.DAYTONA_SNAPSHOT)
+        snapshotConfigured: Boolean(process.env.DAYTONA_SNAPSHOT),
+        autoStopInterval: Number(process.env.OUTPOST_AUTO_STOP_MIN) || 15,
+        autoDeleteInterval: Number(process.env.OUTPOST_AUTO_DELETE_MIN) || 120,
       });
     }
 
