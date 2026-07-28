@@ -57,16 +57,16 @@ export default function Home({ onNavigate }) {
 
       <div className="masthead command-masthead">
         <div>
-          <div className="masthead-eyebrow">JOEPRO AI · OPERATIONS DECK</div>
+          <div className="masthead-eyebrow">MOLTAGENT.RUN · OPERATIONS DECK</div>
           <h2 className="masthead-title">Run agents on infrastructure you can inspect.</h2>
           <p className="masthead-sub">
-            A practical control plane for Devin Outposts, engineering debate, and signal production.
-            Start with the field guide, then put work into a controlled environment.
+            A private control room for Devin Outposts, engineering decisions, and signal production.
+            Explore the field guide, see the access model, then put work into a controlled environment.
           </p>
         </div>
         <div className="command-readout" aria-label="System status">
-          <span>NODE</span><strong>JOEPRO-01</strong>
-          <span>MODE</span><strong>PRIVATE BUILD</strong>
+          <span>NODE</span><strong>MOLT-01</strong>
+          <span>MODE</span><strong>PRIVATE VALIDATION</strong>
           <span>STATUS</span><strong className="status-ok">NOMINAL</strong>
         </div>
       </div>
