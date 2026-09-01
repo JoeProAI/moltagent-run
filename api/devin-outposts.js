@@ -1,29 +1,22 @@
-// POST /api/devin-outposts — Devin Outpost orchestration backed by Daytona.
-/* eslint-disable no-unused-vars */
+// POST /api/devin-outposts — Devin Outpost fleet API (opbeta)
 //
 // Endpoints:
 //   POST   /api/devin-outposts          action=status      → outpost + queue state
-//   POST   /api/devin-outposts          action=dispatch    → queue a new Devin session
-//   POST   /api/devin-outposts          action=terminate   → kill a running session
-//   POST   /api/devin-outposts          action=credit-check → remaining credits
+//   POST   /api/devin-outposts          action=dispatch    → queue a new session
+//   POST   /api/devin-outposts          action=terminate   → cancel a running session
+//   POST   /api/devin-outposts          action=claim       → claim a queued session (orchestrator use)
+//   POST   /api/devin-outposts          action=release     → release a claim (orchestrator use)
 //
-// This is the control plane. The actual sandbox lifecycle is handled by the
-// Daytona orchestrator (guides/python/cognition/devin-outposts). This API
-// queries the orchestrator's state and issues dispatch/terminate commands.
+// This file speaks the 2026 fleet API at https://api.devin.ai/opbeta/outposts/.
+// The actual worker lifecycle (containers, VMs, Kubernetes) is handled by the
+// operator's infrastructure. This API reads queue state and issues commands.
 //
 // Requires these env vars in Vercel:
-//   DEVIN_OUTPOSTS_TOKEN   — machine-serving token for the outpost queue
-//   DEVIN_API_URL          — https://api.devin.ai
-//   DAYTONA_API_KEY        — Daytona API key (sandbox management)
-//   OUTPOST_ID             — the outpost UUID
-//   SNAPSHOT_NAME          — Daytona snapshot for sandbox creation
+//   DEVIN_OUTPOSTS_TOKEN   — v3 service user token with ReadOutposts/WriteOutposts scopes
+//   DEVIN_API_URL          — https://api.devin.ai (optional override)
+//   OUTPOST_ID             — the outpost ID (outpost_env-...) or name
 
 const DEVIN_API = process.env.DEVIN_API_URL || 'https://api.devin.ai';
-const DAYTONA_API = 'https://app.daytona.io/api';
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
 
 async function devinFetch(path, opts = {}) {
   const res = await fetch(`${DEVIN_API}${path}`, {
@@ -41,24 +34,8 @@ async function devinFetch(path, opts = {}) {
   return res.json();
 }
 
-async function daytonaFetch(path, opts = {}) {
-  const res = await fetch(`${DAYTONA_API}${path}`, {
-    headers: {
-      Authorization: `Bearer ${process.env.DAYTONA_API_KEY}`,
-      'Content-Type': 'application/json',
-      ...opts.headers,
-    },
-    ...opts,
-  });
-  if (!res.ok) {
-    const body = await res.text().catch(() => '');
-    throw new Error(`Daytona API ${res.status}: ${body.slice(0, 500)}`);
-  }
-  return res.json();
-}
-
 // ---------------------------------------------------------------------------
-// Action: status — return outpost overview + queue state + sandbox list
+// Action: status — return outpost metadata + queue state (opbeta fleet API)
 // ---------------------------------------------------------------------------
 async function handleStatus() {
   if (!process.env.OUTPOST_ID || !process.env.DEVIN_OUTPOSTS_TOKEN) {
@@ -68,81 +45,59 @@ async function handleStatus() {
     };
   }
 
-  // Fetch queue state from Devin
-  const queue = await devinFetch(
-    `/v1/outposts/${process.env.OUTPOST_ID}/queue?limit=50`
-  ).catch(() => null);
+  const outpostId = process.env.OUTPOST_ID;
 
-  // Fetch sandboxes from Daytona (tagged with this outpost)
-  let sandboxes = [];
-  if (process.env.DAYTONA_API_KEY) {
-    try {
-      const list = await daytonaFetch('/v1/sandbox?state=started');
-      sandboxes = (list.data || [])
-        .filter((s) => s.labels?.['devin.outpost_id'] === process.env.OUTPOST_ID)
-        .map((s) => ({
-          id: s.id,
-          name: s.name,
-          state: s.state,
-          createdAt: s.createdAt,
-          labels: s.labels,
-        }));
-    } catch (_e) {
-      // Daytona API unreachable — continue with empty sandbox list
-    }
+  // Fetch outpost metadata
+  let outpost = null;
+  try {
+    outpost = await devinFetch(`/opbeta/outposts/${outpostId}`);
+  } catch {
+    // Outpost might not exist or token lacks read scope
   }
 
-  const sessions = (queue?.entries || []).map((entry) => ({
-    sessionId: entry.session_id,
-    status: entry.status, // 'waiting' | 'claimed' | 'sleeping'
-    claimedBy: entry.acceptor_id || null,
-    queuedAt: entry.created_at,
-    claimedAt: entry.claimed_at || null,
+  // Fetch queue state from the fleet API (K8s-style list)
+  const queue = await devinFetch(
+    `/opbeta/outposts/devins?outpost=${encodeURIComponent(outpostId)}&first=100`
+  ).catch(() => null);
+
+  // Map the opbeta response to the UI's expected shape
+  const sessions = (queue?.items || []).map((entry) => ({
+    sessionId: entry.metadata?.session_id,
+    outpostId: entry.metadata?.outpost_id,
+    kind: entry.spec?.kind,
+    platform: entry.spec?.platform,
+    phase: entry.status?.phase,
+    acceptorId: entry.status?.acceptor_id || null,
+    sessionStatus: entry.status?.session_status,
+    claimDeadline: entry.status?.claim_deadline,
+    createdAt: entry.metadata?.created_at,
+    updatedAt: entry.metadata?.updated_at,
   }));
 
-  const claimedCount = sessions.filter((s) => s.status === 'claimed').length;
-  const waitingCount = sessions.filter((s) => s.status === 'waiting').length;
-  const sleepingCount = sessions.filter((s) => s.status === 'sleeping').length;
+  const claimedCount = sessions.filter((s) => s.phase === 'claimed').length;
+  const pendingCount = sessions.filter((s) => s.phase === 'pending').length;
 
   return {
     configured: true,
-    outpostId: process.env.OUTPOST_ID,
-    snapshotName: process.env.SNAPSHOT_NAME || 'unset',
-    maxConcurrent: parseInt(process.env.MAX_CONCURRENT_SESSIONS || '5', 10),
+    outpostId,
+    outpostName: outpost?.spec?.name || outpostId,
+    platform: outpost?.spec?.platform || 'linux',
+    description: outpost?.spec?.description || null,
+    queueDepth: outpost?.status?.queue_depth ?? pendingCount,
+    activeClaims: outpost?.status?.active_claims ?? claimedCount,
     queue: {
       total: sessions.length,
-      waiting: waitingCount,
+      pending: pendingCount,
       claimed: claimedCount,
-      sleeping: sleepingCount,
       sessions,
-    },
-    sandboxes,
-    credits: {
-      // Credits are tracked by the orchestrator; this is a placeholder
-      // for when the orchestrator reports back via Firestore or webhook.
-      remaining: null,
-      perSession: 120,
-      note: 'Credit tracking requires orchestrator webhook — see docs.',
+      cursor: queue?.cursor || null,
+      hasNextPage: queue?.has_next_page || false,
     },
   };
 }
 
 // ---------------------------------------------------------------------------
-// Action: credit-check — return running credit balance
-// ---------------------------------------------------------------------------
-async function handleCreditCheck() {
-  // In production, this reads from Firestore where the orchestrator writes
-  // credit consumption. For now, return the default and note what's needed.
-  return {
-    remaining: 19842,
-    perSession: 120,
-    estimatedSessions: Math.floor(19842 / 120),
-    note: 'Connect Daytona billing webhook for live credit data.',
-  };
-}
-
-// ---------------------------------------------------------------------------
-// Action: dispatch — create a new Devin session on the outpost
+// Action: dispatch — create a new Devin session targeting this outpost
 // ---------------------------------------------------------------------------
 async function handleDispatch(body) {
   const { prompt, repo } = body || {};
@@ -151,28 +106,24 @@ async function handleDispatch(body) {
     return { success: false, error: 'Provide a prompt under 4000 chars.' };
   }
 
-  if (!process.env.DEVIN_OUTPOSTS_TOKEN) {
+  if (!process.env.DEVIN_OUTPOSTS_TOKEN || !process.env.OUTPOST_ID) {
     return { success: false, error: 'Devin Outposts not configured.' };
   }
 
   // Check queue depth before dispatching
-  const queue = await devinFetch(
-    `/v1/outposts/${process.env.OUTPOST_ID}/queue?limit=100`
-  ).catch(() => null);
+  const status = await handleStatus();
+  const pending = status.queue?.pending || 0;
+  const maxQueued = parseInt(process.env.MAX_QUEUED_SESSIONS || '20', 10);
 
-  const waiting = (queue?.entries || []).filter(
-    (e) => e.status === 'waiting'
-  ).length;
-  const maxConcurrent = parseInt(process.env.MAX_CONCURRENT_SESSIONS || '5', 10);
-
-  if (waiting >= maxConcurrent * 2) {
+  if (pending >= maxQueued) {
     return {
       success: false,
-      error: `Queue full: ${waiting} waiting, max=${maxConcurrent * 2}. Wait for active sessions to finish.`,
+      error: `Queue full: ${pending} pending, max=${maxQueued}. Wait for workers to claim sessions.`,
     };
   }
 
-  // Create the session via Devin API
+  // Create the session via Devin Sessions API (this queues it on the outpost)
+  // Sessions API is still at /v1/sessions; the fleet API is for queue management
   const session = await devinFetch('/v1/sessions', {
     method: 'POST',
     body: JSON.stringify({
@@ -190,12 +141,12 @@ async function handleDispatch(body) {
     sessionId: session.id,
     status: session.status,
     outpostId: process.env.OUTPOST_ID,
-    message: `Session ${session.id} queued on outpost ${process.env.OUTPOST_ID}. The Daytona orchestrator will claim it.`,
+    message: `Session ${session.id} queued on outpost. A worker will claim it when available.`,
   };
 }
 
 // ---------------------------------------------------------------------------
-// Action: terminate — kill a running session
+// Action: terminate — cancel a running session
 // ---------------------------------------------------------------------------
 async function handleTerminate(body) {
   const { sessionId } = body || {};
@@ -217,6 +168,75 @@ async function handleTerminate(body) {
 }
 
 // ---------------------------------------------------------------------------
+// Action: claim — atomically claim a session (for orchestrators)
+// ---------------------------------------------------------------------------
+async function handleClaim(body) {
+  const { sessionId, acceptorId } = body || {};
+
+  if (!sessionId || typeof sessionId !== 'string') {
+    return { success: false, error: 'Provide a sessionId to claim.' };
+  }
+  if (!acceptorId || typeof acceptorId !== 'string') {
+    return { success: false, error: 'Provide an acceptorId (worker identity).' };
+  }
+
+  if (!process.env.DEVIN_OUTPOSTS_TOKEN) {
+    return { success: false, error: 'Devin Outposts not configured.' };
+  }
+
+  try {
+    const result = await devinFetch(`/opbeta/outposts/devins/${sessionId}/claim`, {
+      method: 'POST',
+      body: JSON.stringify({ acceptor_id: acceptorId }),
+    });
+
+    return {
+      success: true,
+      sessionId,
+      acceptorId,
+      connectToken: result.status?.connect_token,
+      gatewayUrl: result.status?.gateway_url,
+      claimDeadline: result.status?.claim_deadline,
+      message: `Session ${sessionId} claimed by ${acceptorId}.`,
+    };
+  } catch (err) {
+    const is409 = err.message.includes('409');
+    return {
+      success: false,
+      error: is409 ? 'Session already claimed by another worker.' : `Claim failed: ${err.message}`,
+    };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Action: release — release a claim so the session returns to the queue
+// ---------------------------------------------------------------------------
+async function handleRelease(body) {
+  const { sessionId, acceptorId } = body || {};
+
+  if (!sessionId || typeof sessionId !== 'string') {
+    return { success: false, error: 'Provide a sessionId to release.' };
+  }
+  if (!acceptorId || typeof acceptorId !== 'string') {
+    return { success: false, error: 'Provide the acceptorId that holds the claim.' };
+  }
+
+  if (!process.env.DEVIN_OUTPOSTS_TOKEN) {
+    return { success: false, error: 'Devin Outposts not configured.' };
+  }
+
+  try {
+    await devinFetch(`/opbeta/outposts/devins/${sessionId}/release`, {
+      method: 'POST',
+      body: JSON.stringify({ acceptor_id: acceptorId }),
+    });
+    return { success: true, sessionId, message: `Claim on ${sessionId} released.` };
+  } catch (err) {
+    return { success: false, error: `Release failed: ${err.message}` };
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------
 export default async function handler(req, res) {
@@ -230,23 +250,25 @@ export default async function handler(req, res) {
     switch (action) {
       case 'status':
         return res.status(200).json(await handleStatus());
-      case 'credit-check':
-        return res.status(200).json(await handleCreditCheck());
       case 'dispatch':
         return res.status(200).json(await handleDispatch(body));
       case 'terminate':
         return res.status(200).json(await handleTerminate(body));
+      case 'claim':
+        return res.status(200).json(await handleClaim(body));
+      case 'release':
+        return res.status(200).json(await handleRelease(body));
       default:
         return res.status(400).json({
           success: false,
-          message: 'Unknown action. Use: status, credit-check, dispatch, terminate.',
+          message: 'Unknown action. Use: status, dispatch, terminate, claim, release.',
         });
     }
   } catch (err) {
     return res.status(502).json({
       success: false,
       error: err.message,
-      note: 'The orchestrator may not be running. Start the Daytona orchestrator (devin-outposts-orchestrator) and try again.',
+      note: 'Check that your DEVIN_OUTPOSTS_TOKEN has the required scopes (ReadOutposts/WriteOutposts).',
     });
   }
 }

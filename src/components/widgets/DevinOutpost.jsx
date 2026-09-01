@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
-  Cpu, Play, Square, RefreshCw, Zap, Radio, Server,
-  Clock, Terminal, Activity, AlertTriangle, CheckCircle2,
-  Hourglass, DollarSign, HardDrive
+  Cpu, Play, Square, RefreshCw, Zap, Radio,
+  Terminal, Activity, AlertTriangle, CheckCircle2, Hourglass
 } from 'lucide-react';
 
 // ---------------------------------------------------------------------------
@@ -15,7 +14,7 @@ import {
 
 const POLL_INTERVAL = 5000;
 
-export default function DevinOutpost({ daytonaCredits, setActiveAgents }) {
+export default function DevinOutpost({ setActiveAgents }) {
   const [activeTab, setActiveTab] = useState('dispatcher');
   const [status, setStatus] = useState(null);
   const [isPolling, setIsPolling] = useState(false);
@@ -84,7 +83,7 @@ export default function DevinOutpost({ daytonaCredits, setActiveAgents }) {
       setDispatchResult(data);
 
       if (data.success) {
-        appendLog('ok', `Session ${data.sessionId} queued on outpost.`);
+        appendLog('ok', `Session ${data.sessionId} queued. A worker will claim it.`);
         if (setActiveAgents) {
           setActiveAgents((prev) => [
             ...prev,
@@ -138,31 +137,19 @@ export default function DevinOutpost({ daytonaCredits, setActiveAgents }) {
   // ── Derived data ─────────────────────────────────────────────────
   const configured = status?.configured;
   const queue = status?.queue;
-  const sandboxes = status?.sandboxes || [];
   const sessions = queue?.sessions || [];
 
-  const claimedSessions = sessions.filter((s) => s.status === 'claimed');
-  const waitingSessions = sessions.filter((s) => s.status === 'waiting');
-  const sleepingSessions = sessions.filter((s) => s.status === 'sleeping');
+  const claimedSessions = sessions.filter((s) => s.phase === 'claimed');
+  const pendingSessions = sessions.filter((s) => s.phase === 'pending');
 
-  // Real Daytona pricing: ~$0.23/hr active (2 vCPU + 8 GiB), $0 sleeping
-  const activeHourlyRate = 0.23;
-  const creditToDollar = 0.0125; // conservative: ~$200 free tier = ~16K credits
-  const dollarBalance = daytonaCredits * creditToDollar;
-  const activeHours = dollarBalance / activeHourlyRate;
-  const typicalDailyHours = 4;
-  const typicalDays = activeHours / typicalDailyHours;
-
-  const sessionStatusBadge = (s) => {
-    switch (s) {
+  const sessionStatusBadge = (phase) => {
+    switch (phase) {
       case 'claimed':
-        return { cls: 'ok', label: 'RUNNING', icon: <Activity size={11} /> };
-      case 'waiting':
-        return { cls: '', label: 'QUEUED', icon: <Hourglass size={11} /> };
-      case 'sleeping':
-        return { cls: '', label: 'SLEEPING', icon: <Clock size={11} /> };
+        return { cls: 'ok', label: 'CLAIMED', icon: <Activity size={11} /> };
+      case 'pending':
+        return { cls: '', label: 'PENDING', icon: <Hourglass size={11} /> };
       default:
-        return { cls: '', label: s?.toUpperCase(), icon: null };
+        return { cls: '', label: phase?.toUpperCase() || 'UNKNOWN', icon: null };
     }
   };
 
@@ -172,12 +159,11 @@ export default function DevinOutpost({ daytonaCredits, setActiveAgents }) {
       {/* Masthead */}
       <div className="masthead">
         <div>
-          <div className="masthead-eyebrow">S7 · Devin Outpost Super Executor</div>
-          <h2 className="masthead-title">Your personal Devin cockpit — Daytona-powered</h2>
+          <div className="masthead-eyebrow">S7 · Devin Outpost Control</div>
+          <h2 className="masthead-title">Your personal Devin cockpit</h2>
           <p className="masthead-sub">
-            Every Devin session runs in an isolated Daytona sandbox on your infrastructure.
-            Sessions sleep for free, wake with state intact, and delete when done.
-            ~$0.23/hr active. $0/hr sleeping.
+            Every Devin session runs on workers you control. The queue is visible,
+            workers claim sessions automatically, and you see the full lifecycle.
           </p>
         </div>
         <div className="masthead-actions">
@@ -192,32 +178,24 @@ export default function DevinOutpost({ daytonaCredits, setActiveAgents }) {
       </div>
 
       {/* Quick Stats */}
-      <div className="grid cols-4" style={{ marginBottom: 'var(--sp-2)' }}>
+      <div className="grid cols-3" style={{ marginBottom: 'var(--sp-2)' }}>
         <div className="metric">
-          <div className="metric-label">Active sessions <Activity size={12} /></div>
+          <div className="metric-label">Claimed <Activity size={12} /></div>
           <div className="metric-value" style={{ color: claimedSessions.length > 0 ? 'var(--ok)' : 'var(--frost-2)' }}>
             {claimedSessions.length}
           </div>
-          <div className="metric-sub">{claimedSessions.length > 0 ? 'Daytona sandboxes live' : 'No active sandboxes'}</div>
+          <div className="metric-sub">{claimedSessions.length > 0 ? 'Sessions running on workers' : 'No claimed sessions'}</div>
         </div>
 
         <div className="metric">
-          <div className="metric-label">Queued <Hourglass size={12} /></div>
-          <div className="metric-value">{waitingSessions.length}</div>
-          <div className="metric-sub">Waiting for a free slot</div>
+          <div className="metric-label">Pending <Hourglass size={12} /></div>
+          <div className="metric-value">{pendingSessions.length}</div>
+          <div className="metric-sub">Waiting for a worker</div>
         </div>
 
         <div className="metric">
-          <div className="metric-label">Est. runway <DollarSign size={12} /></div>
-          <div className="metric-value" style={{ color: typicalDays > 180 ? 'var(--ok)' : 'var(--amber)' }}>
-            {Math.round(typicalDays)} days
-          </div>
-          <div className="metric-sub">At {typicalDailyHours}h active/day</div>
-        </div>
-
-        <div className="metric">
-          <div className="metric-label">Sandboxes <Server size={12} /></div>
-          <div className="metric-value">{sandboxes.length}</div>
+          <div className="metric-label">Total in queue <Radio size={12} /></div>
+          <div className="metric-value">{sessions.length}</div>
           <div className="metric-sub">{lastPoll ? `Last: ${lastPoll.toLocaleTimeString()}` : 'Not polled'}</div>
         </div>
       </div>
@@ -227,7 +205,6 @@ export default function DevinOutpost({ daytonaCredits, setActiveAgents }) {
         {[
           { id: 'dispatcher', label: 'DISPATCH', icon: <Play size={13} /> },
           { id: 'queue', label: 'QUEUE', icon: <Radio size={13} /> },
-          { id: 'sandboxes', label: 'SANDBOXES', icon: <HardDrive size={13} /> },
           { id: 'console', label: 'LOG', icon: <Terminal size={13} /> },
         ].map((tab) => (
           <button
@@ -251,7 +228,7 @@ export default function DevinOutpost({ daytonaCredits, setActiveAgents }) {
             <div className="panel">
               <div className="panel-head">
                 <div className="panel-title"><Cpu size={15} />Dispatch Devin</div>
-                <span className="panel-note">Runs on your Daytona sandbox. $0.23/hr active.</span>
+                <span className="panel-note">Queues on your outpost. Workers claim automatically.</span>
               </div>
 
               <label className="field-label" htmlFor="devin-prompt">What should Devin work on?</label>
@@ -278,10 +255,10 @@ export default function DevinOutpost({ daytonaCredits, setActiveAgents }) {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--sp-3)', marginTop: 'var(--sp-3)' }}>
                 <div style={{ display: 'flex', gap: 'var(--sp-2)', flexWrap: 'wrap' }}>
                   {configured
-                    ? ['Devin Enterprise', 'Daytona sandbox', '~$0.23/hr active'].map((t, i) => (
+                    ? ['Devin Outposts', 'Self-hosted worker', 'Your infrastructure'].map((t, i) => (
                         <span key={i} className="badge">{t}</span>
                       ))
-                    : ['Set DEVIN_OUTPOSTS_TOKEN', 'Set DAYTONA_API_KEY', 'Set OUTPOST_ID'].map((t, i) => (
+                    : ['Set DEVIN_OUTPOSTS_TOKEN', 'Set OUTPOST_ID'].map((t, i) => (
                         <span key={i} className="badge" style={{ borderColor: 'var(--danger)', color: 'var(--danger)' }}>
                           <AlertTriangle size={10} style={{ marginRight: '4px' }} />{t}
                         </span>
@@ -293,7 +270,7 @@ export default function DevinOutpost({ daytonaCredits, setActiveAgents }) {
                     {isDispatching ? 'Dispatching…' : 'Dispatch'}
                   </button>
                   <span className="btn-hint">
-                    {configured ? 'Session lands in your Daytona sandbox' : 'Configure credentials first'}
+                    {configured ? 'Session queues until a worker claims it' : 'Configure credentials first'}
                   </span>
                 </div>
               </div>
@@ -317,38 +294,28 @@ export default function DevinOutpost({ daytonaCredits, setActiveAgents }) {
             </div>
           </div>
 
-          {/* Runway panel */}
+          {/* Info panel */}
           <div className="stack" style={{ gap: 'var(--sp-2)' }}>
-            <span className="field-label">Credit Runway</span>
-            <div className="panel">
-              <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--amber)', fontFamily: 'var(--font-display)' }}>
-                ~{Math.round(typicalDays)} days
-              </div>
-              <div style={{ fontSize: '0.7rem', color: 'var(--frost-2)', fontFamily: 'var(--font-mono)', marginTop: '2px' }}>
-                at {typicalDailyHours}h active per day · ~${activeHourlyRate.toFixed(2)}/hr active
-              </div>
-              <div className="segmeter running" aria-hidden="true" style={{ marginTop: 'var(--sp-3)' }}>
-                {[...Array(10)].map((_, i) => (
-                  <span key={i} className={i < Math.min(10, Math.ceil((typicalDays / 365) * 10)) ? 'lit' : ''} />
-                ))}
-              </div>
-              <p className="panel-sub" style={{ marginBottom: 0, marginTop: 'var(--sp-2)' }}>
-                {typicalDays > 180
-                  ? `$${dollarBalance.toFixed(0)} balance. Sessions sleep free — real runway much longer.`
-                  : `$${dollarBalance.toFixed(0)} balance. Sessions only cost when actively coding.`}
-              </p>
-            </div>
-
             <div className="panel">
               <div className="panel-head"><span className="panel-title" style={{ fontSize: '0.75rem' }}>How This Works</span></div>
               <div style={{ fontSize: '0.68rem', color: 'var(--frost-2)', lineHeight: 1.7, fontFamily: 'var(--font-mono)' }}>
-                • Your Devin session runs inside a Daytona sandbox<br />
-                • ~$0.23/hr when Devin is actively coding<br />
-                • $0/hr when the session sleeps (filesystem preserved)<br />
-                • Sandbox deleted when session ends<br />
+                • Devin handles reasoning and the agent loop in the cloud<br />
+                • Workers claim sessions and execute tool calls locally<br />
+                • N workers serve N concurrent sessions<br />
+                • Sessions wait in the queue until a worker is available<br />
                 • All execution stays on your infrastructure<br />
-                • Carapace firewall gates memory between cloud and local
+                • Workers only need outbound HTTPS, no inbound ports
               </div>
+            </div>
+
+            <div className="panel sunken">
+              <div className="panel-head"><span className="panel-title" style={{ fontSize: '0.75rem' }}>Start a Worker</span></div>
+              <pre className="codeblock" style={{ margin: 0, fontSize: '0.65rem', background: 'transparent', padding: 0 }}><code>{`devin worker start \\
+  --outpost=<name> \\
+  --token=<token>`}</code></pre>
+              <p className="panel-sub" style={{ marginBottom: 0, marginTop: 'var(--sp-2)' }}>
+                Install with: curl -fsSL https://cli.devin.ai/install.sh | bash
+              </p>
             </div>
           </div>
         </div>
@@ -364,8 +331,8 @@ export default function DevinOutpost({ daytonaCredits, setActiveAgents }) {
                 <span style={{ color: 'var(--danger)', fontWeight: 700, fontSize: '0.8rem' }}>Not configured</span>
               </div>
               <p className="panel-sub" style={{ marginBottom: 0 }}>
-                Set DEVIN_OUTPOSTS_TOKEN, DAYTONA_API_KEY, and OUTPOST_ID in Vercel.
-                Then start the Daytona orchestrator with: devin-outposts-orchestrator
+                Set DEVIN_OUTPOSTS_TOKEN and OUTPOST_ID in Vercel. Then start a worker
+                with: devin worker start --outpost=&lt;name&gt;
               </p>
             </div>
           )}
@@ -381,19 +348,19 @@ export default function DevinOutpost({ daytonaCredits, setActiveAgents }) {
           )}
 
           {configured && sessions.map((session) => {
-            const badge = sessionStatusBadge(session.status);
+            const badge = sessionStatusBadge(session.phase);
             return (
               <div key={session.sessionId} className="panel"
-                style={session.status === 'claimed' ? { borderColor: 'var(--ok)' } : undefined}>
+                style={session.phase === 'claimed' ? { borderColor: 'var(--ok)' } : undefined}>
                 <div className="panel-head">
                   <span className={`badge ${badge.cls}`}>{badge.icon}<span style={{ marginLeft: '4px' }}>{badge.label}</span></span>
                   <span className="badge" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6rem' }}>{session.sessionId}</span>
                 </div>
                 <div style={{ fontSize: '0.7rem', color: 'var(--frost-2)', fontFamily: 'var(--font-mono)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <div>Queued: {new Date(session.queuedAt).toLocaleString()}</div>
-                  {session.claimedAt && <div>Claimed: {new Date(session.claimedAt).toLocaleString()}</div>}
+                  <div>Queued: {session.createdAt ? new Date(session.createdAt * 1000).toLocaleString() : 'Unknown'}</div>
+                  {session.acceptorId && <div>Worker: {session.acceptorId}</div>}
                 </div>
-                {(session.status === 'claimed' || session.status === 'waiting') && (
+                {(session.phase === 'claimed' || session.phase === 'pending') && (
                   <button type="button" className="btn" style={{ marginTop: 'var(--sp-2)', width: '100%', borderColor: 'var(--danger)', color: 'var(--danger)' }}
                     onClick={() => handleTerminate(session.sessionId)} disabled={terminating === session.sessionId}>
                     {terminating === session.sessionId ? <RefreshCw size={13} className="spin" /> : <Square size={13} />}
@@ -406,39 +373,10 @@ export default function DevinOutpost({ daytonaCredits, setActiveAgents }) {
 
           {configured && sessions.length > 0 && (
             <div style={{ display: 'flex', gap: 'var(--sp-2)', fontSize: '0.65rem', color: 'var(--frost-2)', fontFamily: 'var(--font-mono)', padding: 'var(--sp-2) 0' }}>
-              <span><span style={{ color: 'var(--ok)' }}>●</span> {claimedSessions.length} running</span>
-              <span><span style={{ color: 'var(--frost-2)' }}>○</span> {waitingSessions.length} waiting</span>
-              <span><span style={{ color: 'var(--frost-1)' }}>◎</span> {sleepingSessions.length} sleeping</span>
+              <span><span style={{ color: 'var(--ok)' }}>●</span> {claimedSessions.length} claimed</span>
+              <span><span style={{ color: 'var(--frost-2)' }}>○</span> {pendingSessions.length} pending</span>
             </div>
           )}
-        </div>
-      )}
-
-      {/* TAB: Sandboxes */}
-      {activeTab === 'sandboxes' && (
-        <div className="stack">
-          {sandboxes.length === 0 && (
-            <div className="panel sunken">
-              <div className="panel-head"><Server size={15} /><span style={{ fontWeight: 700, fontSize: '0.8rem' }}>No active sandboxes</span></div>
-              <p className="panel-sub" style={{ marginBottom: 0 }}>
-                {configured ? 'No Devin sessions running right now.' : 'Configure the outpost to see sandboxes.'}
-              </p>
-            </div>
-          )}
-          <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
-            {sandboxes.map((box) => (
-              <div key={box.id} className="panel" style={{ borderColor: box.state === 'started' ? 'var(--ok)' : 'var(--seam)' }}>
-                <div className="panel-head">
-                  <span className="panel-title" style={{ fontSize: '0.75rem' }}>{box.name}</span>
-                  <span className={`badge ${box.state === 'started' ? 'ok' : ''}`}>{box.state?.toUpperCase()}</span>
-                </div>
-                <div style={{ fontSize: '0.68rem', color: 'var(--frost-2)', fontFamily: 'var(--font-mono)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <div>ID: {box.id}</div>
-                  <div>Created: {new Date(box.createdAt).toLocaleString()}</div>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       )}
 
