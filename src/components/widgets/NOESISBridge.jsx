@@ -151,14 +151,17 @@ export default function NOESISBridge({ onNavigate }) {
     setBusyId(null);
   };
 
-  const byoSnippet = `# Devin Outposts on your own Daytona org — official flow
-# 1. Daytona key:   app.daytona.io -> API Keys (scope: sandbox create)
-# 2. Outpost token: Devin settings -> Outposts (requires Devin Enterprise)
-export DAYTONA_API_KEY="dtn_your_key_here"
-export DEVIN_OUTPOST_TOKEN="your_outpost_token_here"
+  const byoSnippet = `# Devin Outposts — first-party worker setup
+# 1. Create an outpost in Devin Cloud: Settings -> Environment -> Outposts
+# 2. Copy the outpost token (shown once at creation)
+# 3. Install the Devin CLI and start the worker:
 
-# Then follow the official guide (snapshot + registration):
-# https://www.daytona.io/docs/en/guides/devin/devin-outposts/`;
+curl -fsSL https://cli.devin.ai/install.sh | bash
+
+devin worker start --outpost=<outpost_name> --token=<your_token>
+
+# The worker watches the queue and claims sessions automatically.
+# Docs: https://docs.devin.ai/cloud/outposts/quickstart`;
 
   const handleCopySnippet = () => {
     navigator.clipboard.writeText(byoSnippet);
@@ -348,8 +351,8 @@ export DEVIN_OUTPOST_TOKEN="your_outpost_token_here"
             </div>
             <p className="panel-sub">
               Guest compute will be useful only when it is non-invasive: a dedicated minimal snapshot,
-              named access, fixed lifecycle limits, and an immediate shutdown path. Until then, use your
-              own Daytona org and keep every credential in your environment.
+              named access, fixed lifecycle limits, and an immediate shutdown path. Until then, run
+              your own worker and keep every credential in your environment.
             </p>
 
             <pre className="codeblock" style={{ maxHeight: '220px', fontSize: '0.66rem' }}><code>{byoSnippet}</code></pre>
@@ -361,23 +364,23 @@ export DEVIN_OUTPOST_TOKEN="your_outpost_token_here"
               </button>
               <a
                 className="btn quiet"
-                href="https://www.daytona.io/docs/en/guides/devin/devin-outposts/"
+                href="https://docs.devin.ai/cloud/outposts/quickstart"
                 target="_blank"
                 rel="noreferrer"
                 style={{ textDecoration: 'none' }}
               >
                 <ExternalLink size={14} />
-                Daytona guide
+                Quickstart guide
               </a>
               <a
                 className="btn quiet"
-                href="https://docs.devin.ai/cloud/outposts/overview"
+                href="https://docs.devin.ai/cloud/outposts/overview#integrations"
                 target="_blank"
                 rel="noreferrer"
                 style={{ textDecoration: 'none' }}
               >
                 <ExternalLink size={14} />
-                Devin outposts docs
+                Partner platforms
               </a>
             </div>
           </div>
