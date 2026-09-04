@@ -6,7 +6,7 @@ import Home from './components/widgets/Home';
 import Lab from './components/widgets/Lab';
 import MechaRun from './components/widgets/MechaRun';
 import XGrowth from './components/widgets/XGrowth';
-import NOESISBridge from './components/widgets/NOESISBridge';
+import DevinOutpost from './components/widgets/DevinOutpost';
 import OutpostGuide from './components/widgets/OutpostGuide';
 
 const Canvas3D = lazy(() => import('./components/Canvas3D'));
@@ -21,7 +21,7 @@ function App() {
     /* eslint-disable react-hooks/set-state-in-effect */
     const map = {
       'home': 'research',
-      'bridge': 'research',
+      'outposts': 'research',
       'guide': 'research',
       'mecha-run': 'mecha-party',
       'x-growth': 'x-growth',
@@ -82,8 +82,8 @@ function App() {
           {activeWidget === 'home' && (
             <Home onNavigate={setActiveWidget} />
           )}
-          {activeWidget === 'bridge' && (
-            <NOESISBridge onNavigate={setActiveWidget} />
+          {activeWidget === 'outposts' && (
+            <DevinOutpost setActiveAgents={setActiveAgents} />
           )}
           {activeWidget === 'guide' && (
             <OutpostGuide onNavigate={setActiveWidget} />
