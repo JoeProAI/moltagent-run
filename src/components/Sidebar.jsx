@@ -4,8 +4,8 @@ export default function Sidebar({ activeWidget, setActiveWidget, setConstellatio
   const plates = [
     { id: 'home', num: '01', label: 'COMMAND', role: 'System overview', mode: 'research' },
     { id: 'guide', num: '02', label: 'FIELD GUIDE', role: 'Devin Outposts manual', mode: 'research' },
-    { id: 'bridge', num: '03', label: 'OUTPOSTS', role: 'Sandbox control', mode: 'research' },
-    { id: 'lab', num: '04', label: 'PROVING GROUND', role: 'Concept systems', mode: 'cinematic' },
+    { id: 'outposts', num: '03', label: 'OUTPOSTS', role: 'Fleet control', mode: 'research' },
+    { id: 'lab', num: '04', label: 'PROVING GROUND', role: 'Simulated systems', mode: 'cinematic' },
   ];
 
   return (
